@@ -1,7 +1,5 @@
 ---
-title: github hook 自动化部署hexo博客
-tags:
-	- 运营
+title:自动化部署hexo博客
 ---
 
 	<?php
