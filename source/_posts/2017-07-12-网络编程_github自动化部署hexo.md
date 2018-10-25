@@ -1,5 +1,5 @@
 ---
-title:自动化部署hexo博客
+title: 自动化部署hexo博客
 ---
 
 	<?php

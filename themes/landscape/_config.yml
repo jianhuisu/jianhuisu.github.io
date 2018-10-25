@@ -2,7 +2,7 @@
 menu:
   Home: /
   Archives: /archives
-rss: /atom.xml
+#rss: /atom.xml
 
 # Content
 excerpt_link: Read More
@@ -29,9 +29,9 @@ show_count: false
 
 # Miscellaneous
 google_analytics:
-gauges_analytics:
+baidu_analytics:701c3b7f0d7f0e303477de29aca9dab0
 favicon: /favicon.png
-twitter:
-google_plus:
-fb_admins:
-fb_app_id:
+#twitter:
+#google_plus:
+#fb_admins:
+#fb_app_id:
