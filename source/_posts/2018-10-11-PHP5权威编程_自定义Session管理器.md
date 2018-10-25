@@ -1,10 +1,7 @@
 ---
 layout:     post
 title:      PHP编程经验
-subtitle:   如何自定义session存储过程
-date:       2018-10-11
-author:     machine_su
-header-img: img/post-bg-kuaidi.jpg
+keywords: "session 自定义session"
 catalog: true
 tags:
     - PHP
