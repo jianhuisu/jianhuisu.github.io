@@ -81,4 +81,4 @@ deploy:
   type: git
   repo: https://github.com/jianhuisu/jianhuisu.github.io.git
   branch: master
-  message: 
+  message: update
