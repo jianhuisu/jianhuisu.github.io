@@ -1,3 +1,5 @@
 # hexo_blog
 
-https://www.sulianlian.com
+<script>
+    window.location.href = "https://www.sulianlian.com";
+</script>
