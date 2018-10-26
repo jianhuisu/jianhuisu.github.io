@@ -6,10 +6,11 @@
 title: 光速机枪的博客
 subtitle:
 description: 如果突然 你的美丽闯入我的空虚
-keywords: PHP blog C
+keywords: PHP blog C 光速机枪 博客 苏苏卡其 笔记
 author: jianhuisu
 language:
 timezone:
+put_on_record: 京ICP备18038564号-2
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
