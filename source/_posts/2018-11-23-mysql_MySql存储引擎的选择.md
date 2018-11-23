@@ -1,7 +1,7 @@
 ---
-title : MySQL存储引擎的选择
+title : MySQL存储引擎的选择及数据类型的选择
 tags : 
-	- 深入浅出MySQL
+	- mysql
 keywords : "深入浅出MySQL,mysql"
 ---
 
@@ -29,7 +29,6 @@ SQL 结构化查询语言
 压缩存储
 
 
-
 #### Innodb
 	行锁
 	支持事务
@@ -45,10 +44,6 @@ SQL 结构化查询语言
 ## 如何正确的选取数据类型
 
 正确的选择存储引擎之后，还需要正确的选取数据类型
-
-当表引擎是 MyISAM时
-
-char(4) 与 varchar(4) 的区别是  char长度固定，所以很快
 
 #### char 与 varchar
 - **MyISAM存储引擎**
