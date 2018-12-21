@@ -197,9 +197,128 @@ todo 这里定点数的截取有问题
 	+------------+---------------------+---------------------+----------+------+
 	3 rows in set (0.00 sec)
 
-备注：timestamp的显示会根据时区变化而变化
+备注：timestamp的显示会根据时区变化而变化，timestamp支持的时间范围较小，不适合存储跨度久远的时间
 
-### todo
+
+### 字符串
+
+#### char 与 varchar 的区别
+
+1 存储方式不同，char字段声明时固定存储大小，varchar存储时根据值大小存储
+
+2 char字段存储时会忽略末尾的空格，varchar保留
+
+	mysql> create table tmp_table_string(name1 char(4),name2 varchar(4));
+	Query OK, 0 rows affected (0.08 sec)
+	
+	mysql> desc tmp_table_string;
+	+-------+------------+------+-----+---------+-------+
+	| Field | Type       | Null | Key | Default | Extra |
+	+-------+------------+------+-----+---------+-------+
+	| name1 | char(4)    | YES  |     | NULL    |       |
+	| name2 | varchar(4) | YES  |     | NULL    |       |
+	+-------+------------+------+-----+---------+-------+
+	2 rows in set (0.00 sec)
+	
+	mysql> insert into tmp_table_string(name1,name2) values("s  ","s   ");
+	Query OK, 1 row affected (0.24 sec)
+	
+	mysql> select * from tmp_table_string;
+	+-------+-------+
+	| name1 | name2 |
+	+-------+-------+
+	| s     | s     |
+	+-------+-------+
+	1 row in set (0.00 sec)
+
+name1末尾的空格被删除，name2末尾的空格被保留
+	
+	mysql> select length(name1),length(name2) from tmp_table_string;
+	+---------------+---------------+
+	| length(name1) | length(name2) |
+	+---------------+---------------+
+	|             1 |             4 |
+	+---------------+---------------+
+	1 row in set (0.00 sec)
+
+注意，忽略的是字符串末尾空格，而非字符串头
+	
+	mysql> insert into tmp_table_string(name1,name2) values(" s ","s   ");
+	Query OK, 1 row affected (0.02 sec)
+	
+	mysql> select length(name1),length(name2) from tmp_table_string;
+	+---------------+---------------+
+	| length(name1) | length(name2) |
+	+---------------+---------------+
+	|             1 |             4 |
+	|             2 |             4 |
+	+---------------+---------------+
+	2 rows in set (0.00 sec)
+	
+	mysql> select concat(name1,'_'),concat(name2,'_') from tmp_table_string;
+	+-------------------+-------------------+
+	| concat(name1,'_') | concat(name2,'_') |
+	+-------------------+-------------------+
+	| s_                | s   _             |
+	|  s_               | s   _             |
+	+-------------------+-------------------+
+	2 rows in set (0.00 sec)
+
+
+上面简单的介绍了mysql的各种数据类型，包括基本用途、物理存储、表示范围，这样在面对具体的应用时，可以根据应用的特点，争取在满足应用需求的基础上，用较小的存储代价换取较高的数据性能。
+
+#### BINARY 与 VARBINARY
+
+#### ENUM 与 SET
+	
+	mysql> create table tmp_table_enum( id int(11),name enum('M','F') );
+	Query OK, 0 rows affected (0.21 sec)
+	
+	mysql> desc tmp_table_enum;
+	+-------+---------------+------+-----+---------+-------+
+	| Field | Type          | Null | Key | Default | Extra |
+	+-------+---------------+------+-----+---------+-------+
+	| id    | int(11)       | YES  |     | NULL    |       |
+	| name  | enum('M','F') | YES  |     | NULL    |       |
+	+-------+---------------+------+-----+---------+-------+
+	2 rows in set (0.01 sec)
+
+使用位置索引或者值本身均可实现插入	
+		 
+	mysql> insert into tmp_table_enum(id,name) values(1,1);
+	Query OK, 1 row affected (0.19 sec)
+	
+	mysql> select * from tmp_table_enum;
+	+------+------+
+	| id   | name |
+	+------+------+
+	|    1 | M    |
+	+------+------+
+	1 row in set (0.00 sec)
+	
+	mysql> insert into tmp_table_enum(id,name) values(1,2);
+	Query OK, 1 row affected (0.09 sec)
+	
+	mysql> select * from tmp_table_enum;
+	+------+------+
+	| id   | name |
+	+------+------+
+	|    1 | M    |
+	|    1 | F    |
+	+------+------+
+	2 rows in set (0.00 sec)
+	
+	
+	mysql> select * from tmp_table_enum where name='F';
+	+------+------+
+	| id   | name |
+	+------+------+
+	|    1 | F    |
+	+------+------+
+	1 row in set (0.00 sec)
+
+
+### TODO
 
 我有两个疑问 
 
