@@ -1,5 +1,7 @@
 ---
 title : MySQL中的运算符
+tags :
+	- MySQL
 ---
 
 ### 算数运算符

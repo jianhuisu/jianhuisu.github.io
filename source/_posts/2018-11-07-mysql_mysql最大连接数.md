@@ -1,7 +1,7 @@
 ---
 title : mysql最大连接数
 tags :
-	- mysql
+	- MySQL
 	- PHP
 ---
 

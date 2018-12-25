@@ -1,7 +1,7 @@
 ---
 title : MySQL存储引擎的选择及数据类型的选择
-tags : 
-	- mysql
+tags :
+	- MySQL
 keywords : "深入浅出MySQL,mysql"
 ---
 

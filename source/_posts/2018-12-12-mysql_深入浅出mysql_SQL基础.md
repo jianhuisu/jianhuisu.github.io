@@ -1,6 +1,8 @@
 ---
 
 title ： SQL基础
+tags :
+	- MySQL
 
 ---
 
