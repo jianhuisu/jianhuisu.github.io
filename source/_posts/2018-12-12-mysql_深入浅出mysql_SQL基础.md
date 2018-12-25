@@ -1,5 +1,5 @@
 ---
-title ： SQL基础
+title : SQL基础
 tags :
 	- MySQL
 ---

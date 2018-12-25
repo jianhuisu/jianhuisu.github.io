@@ -1,5 +1,5 @@
 ---
-title ： MySQL支持的数据类型
+title : MySQL支持的数据类型
 tags :
 	- MySQL
 ---
