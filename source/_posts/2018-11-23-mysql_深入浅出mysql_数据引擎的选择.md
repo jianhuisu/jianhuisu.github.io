@@ -5,8 +5,7 @@ tags :
 keywords : "深入浅出MySQL,mysql"
 ---
 
-每次建表的时候心里都发虚，不知道去如何选择数据引擎、字段类型.才能贴合业务，获得良好的性能。每次都要去翻看前辈是如何设置的，这种不自信的感觉让我很不爽。
-
+每次建表的时候心里都发虚，不知道去如何选择数据引擎、字段类型.才能贴合业务，获得良好的性能。
 SQL 结构化查询语言
 
 #### MyISAM
@@ -160,36 +159,88 @@ mysql的BLOB/CLOB字段还支持**前缀索引**，就是为字段的前N个字�
 
 type为`range`级别，勉强及格。
 
-#### 浮点数与定点数
+### 外键约束
 
-float   浮点数 超过限定格式时，会进行四舍五入处理 float(m,d) 最多保留`m - n`位整数，小数部分有效数字为n位
-decimal 定点数 实际上以字符串形式存储数值，不会有精度损失  （货币应用中）
+外键的作用：从数据库层面保障数据的一致性与完整性
 
-特别需要注意的一点，编程中要尽量避免浮点数的比较，如果不可避免，也尽量使用范围比较代替 ==
+使用场景：系统的权限管理、金融系统
 
-*题外话：我从开源产品edusoho订单模块浮点数的使用，将浮点数转化为整数后再进行操作，但是我没有搞明白这样做会比两个浮点数直接比较准确，浮点数与整数相乘结果仍然为浮点数，感觉没有什么意义或者自己没有领会到位。等我把`ZVAL`转换摸透再来完善这里*
+eg.
 
-	<?php	
+	// 事业部表
+	mysql> CREATE TABLE `business` (
+	  `business_id` int(10) NOT NULL AUTO_INCREMENT,
+	  `name` varchar(50) DEFAULT NULL,
+	  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`business_id`)
+	) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8
 	
-		$f1 = 1.23;
-		$f2 = 1.20;
-		
-		if($f1 * 100  == $f2*100 ){
-		    echo 1;
-		}else{
-		    echo 2;
-		}
+	// 军团表
+	CREATE TABLE `region` (
+	  `region_id` int(11) NOT NULL,
+	  `name` varchar(50) DEFAULT NULL,
+	  `business_id` int(11) DEFAULT NULL,
+	  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`region_id`),
+	  KEY `fk_region_business` (`business_id`),
+	  CONSTRAINT `fk_region_business` FOREIGN KEY (`business_id`) REFERENCES `business` (`business_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8
 
-浮点数使用注意问题
+声明方式: CONSTRAINT `fk_region_business` FOREIGN KEY (`business_id`) REFERENCES `business` (`business_id`)
 
-- 尽量避免浮点数比较
-- 货币等对精度敏感的数据要使用定点数存储
-- 使用浮点数注意精度损失
+- 当删除`business` 表中数据时，若子表`region`存在关联数据，禁止删除操作
+- 当增加`region` 表中数据时，若父表`business`不存在关联数据，禁止增加操作
+
+#### 外键关联模式
+
+- 当某个表的主键被其它表创建了外键参照，那么该表的对应索引与主键禁止删除
+- RESTRICT: 限制子表中有关联记录父表禁止删除
+- CASCADE : 父表更新记录时，更新子表中相关记录
+- SET NULL: 父表更新记录时，子表中相关记录置为NULL
+
+eg. CONSTRAINT `fk_region_business` FOREIGN KEY (`business_id`) REFERENCES `business` (`business_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+#### 如何导入含有外键的数据
+
+SET FOREIGN_KEY_CHECKS=0; # 临时关闭线程中外键检查
+数据导入命令
+SET FOREIGN_KEY_CHECKS=1;#  恢复线程中外键检查
+
+eg.
+
+	SET FOREIGN_KEY_CHECKS=0;
 	
+	CREATE TABLE IF NOT EXISTS `region` (
+	  `region_id` int(11) NOT NULL,
+	  `name` varchar(50) DEFAULT NULL,
+	  `business_id` int(11) DEFAULT NULL,
+	  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`region_id`),
+	  KEY `fk_region_business` (`business_id`),
+	  CONSTRAINT `fk_region_business` FOREIGN KEY (`business_id`) REFERENCES `business` (`business_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-##### 时间数据类型
+	DELETE FROM `region`;
+	/*!40000 ALTER TABLE `region` DISABLE KEYS */;
+	INSERT INTO `region` (`region_id`, `name`, `business_id`, `update_time`) VALUES
+		(1, '第一军团', 1, '2019-01-10 20:19:04'),
+		(2, '第二十一军团', 2, '2019-01-10 20:19:49'),
+		(3, '第三十一军团', 3, '2019-01-10 20:20:10');
+	/*!40000 ALTER TABLE `region` ENABLE KEYS */;
+	/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+	/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+	/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+	
+	CREATE TABLE IF NOT EXISTS `business` (
+	  `business_id` int(10) NOT NULL AUTO_INCREMENT,
+	  `name` varchar(50) DEFAULT NULL,
+	  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`business_id`)
+	) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
-这块没什么意思，不说了
+	SET FOREIGN_KEY_CHECKS=1;
+
+注意：使用上述命令可以忽略数据的导入顺序，但是如果缺少父表，依然无法成功导入。
 
 ## 参考资料
 

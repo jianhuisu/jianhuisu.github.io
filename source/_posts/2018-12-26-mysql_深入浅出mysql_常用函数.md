@@ -265,7 +265,7 @@ IFNULL(ifvalues,value1)
 	+--------------------------------+
 	8 rows in set (0.00 sec)
 
-case ... when ... then ... else ... end
+case when exp then ... else ... end
 
 	mysql> select case when name is null then 'name is null' when name='' then 'name is empty' else name end from user;
 	+--------------------------------------------------------------------------------------------+
@@ -282,6 +282,71 @@ case ... when ... then ... else ... end
 	+--------------------------------------------------------------------------------------------+
 	8 rows in set (0.01 sec)
 
+case ... when exp then ... else ... end，这个函数在进行数据拆分重组时非常有用。举个例子：我上学那会，六年级属于初中的一年级，五年级为小学的最后一级,创建数据表存储层级关系:
+	
+	mysql> create table origanization(
+		id int(11) auto_increment primary key,
+		org1 char(50),
+		org2 char(50),
+		org3 char(50)
+	);
+	Query OK, 0 rows affected (0.26 sec)
+		
+	mysql> desc origanization;
+	+-------+----------+------+-----+---------+----------------+
+	| Field | Type     | Null | Key | Default | Extra          |
+	+-------+----------+------+-----+---------+----------------+
+	| id    | int(11)  | NO   | PRI | NULL    | auto_increment |
+	| org1  | char(50) | YES  |     | NULL    |                |
+	| org2  | char(50) | YES  |     | NULL    |                |
+	| org3  | char(50) | YES  |     | NULL    |                |
+	+-------+----------+------+-----+---------+----------------+
+	4 rows in set (0.00 sec)
+
+将阶段、年级、班级数据存入表	
+	mysql> insert into origanization(org1,org2,org3) 
+		values('小学','五年级','一班'),
+		('小学','五年级','2班'),
+		('初中','六年级','一班'),
+		('初中','六年级','2班'),
+		('高中','高一','一班'),
+		('高中','高一','2班');
+	Query OK, 6 rows affected (0.18 sec)
+	Records: 6  Duplicates: 0  Warnings: 0
+	
+	mysql> select * from origanization;
+	+----+--------+-----------+--------+
+	| id | org1   | org2      | org3   |
+	+----+--------+-----------+--------+
+	|  1 | 小学   | 五年级    | 一班   |
+	|  2 | 小学   | 五年级    | 2班    |
+	|  3 | 初中   | 六年级    | 一班   |
+	|  4 | 初中   | 六年级    | 2班    |
+	|  5 | 高中   | 高一      | 一班   |
+	|  6 | 高中   | 高一      | 2班    |
+	+----+--------+-----------+--------+
+	6 rows in set (0.00 sec)
+
+但是等我弟弟上学时，六年级被划分成为小学的最后一级,因为种种原因,不能更改原数据，但是需要查看新的划分关系，可以使用case函数生成中间表：
+	
+	mysql> select case org2 when '六年级' then '小学' else org1 end as new_org1,org2,org3 from origanization;
+	+----------+-----------+--------+
+	| new_org1 | org2      | org3   |
+	+----------+-----------+--------+
+	| 小学     | 五年级    | 一班   |
+	| 小学     | 五年级    | 2班    |
+	| 小学     | 六年级    | 一班   |
+	| 小学     | 六年级    | 2班    |
+	| 高中     | 高一      | 一班   |
+	| 高中     | 高一      | 2班    |
+	+----------+-----------+--------+
+	6 rows in set (0.00 sec)
+
+特别注意，case后的字段不能直接在where条件中使用，如需使用需要以中间表的形式引用
+	
+	mysql> select case org2 when '六年级' then '小学' else org1 end as new_org1,org2,org3 from origanization where new_org1='小学';
+	ERROR 1054 (42S22): Unknown column 'new_org1' in 'where clause'
+	 
 
 ### 其它函数
 
@@ -290,6 +355,17 @@ case ... when ... then ... else ... end
 - USER()
 - PASSWORD(str)
 - MD5(str);
+
+### 聚合函数
+
+sum()
+count()
+avg()
+
+根据分组时**各自检索到**的数据行数进行求平均数
+
+	select avg(work_hour) as avg_work_hour,em from compile_add_on_work_hour group by em
+	
 
 ### 小结
 	MySQL有很多内置函数，功能实用且性能高效，在空闲之余应该经常看一看MySQL的官方手册
