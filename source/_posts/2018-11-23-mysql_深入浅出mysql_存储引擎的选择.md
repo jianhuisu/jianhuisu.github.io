@@ -242,6 +242,14 @@ eg.
 
 注意：使用上述命令可以忽略数据的导入顺序，但是如果缺少父表，依然无法成功导入。
 
+
+## MERGE
+
+alter table articles modify id int ; 【重新定义列类型】
+
+alter table articles drop primary key;
+
+
 ## 参考资料
 
 深入浅出MySQL第三版
