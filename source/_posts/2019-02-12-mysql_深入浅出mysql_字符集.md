@@ -81,17 +81,60 @@ MySQL的字符集、校对规则设置分为四个级别
 
 如果没有特别指定服务器字符集，默认使用 latin1 作为服务器的字符集
 
+查询当前服务器的字符集设置
+
+	show variables like 'character_set_server';
+
+查询当前服务器的校对规则设置
+
+	show variables like 'collation_server';
+
 ### 数据库的字符集设置
 	
 - 如果指定了字符集与校对规则，那么使用指定的字符集与校对规则
 - 	如果只指定了字符集，没有指定校对规则，那么使用指定字符集与指定字符集默认的校对规则
 - 	如果没有指定字符集与校对规则，那么使用服务器的字符集与校对规则
+
+查询当前数据库的字符集设置
+
+	show variables like 'character_set_database';
+
+查询当前数据库的字符集的校对规则
+
+	show variables like 'collation_database';
+
 	
 ### 数据表的字符集设置
  
 - 	如果指定了字符集与校对规则，那么使用指定的字符集与校对规则
 - 	如果只指定了字符集，没有指定校对规则，那么使用指定字符集与指定字符集默认的校对规则
 - 	如果没有指定字符集与校对规则，那么使用数据库的字符集与校对规则
+
+如何查看数据表的字符集
+
+	mysql> show table status like 'tgbk'\G;
+	*************************** 1. row ***************************
+	           Name: tgbk
+	         Engine: InnoDB
+	        Version: 10
+	     Row_format: Dynamic
+	           Rows: 0
+	 Avg_row_length: 0
+	    Data_length: 16384
+	Max_data_length: 0
+	   Index_length: 0
+	      Data_free: 0
+	 Auto_increment: NULL
+	    Create_time: 2019-02-20 11:07:25
+	    Update_time: NULL
+	     Check_time: NULL
+	      Collation: gbk_chinese_ci   // 这里校对规则的前缀就是该表的字符集
+	       Checksum: NULL
+	 Create_options: 
+	        Comment: 
+	1 row in set (0.00 sec)
+
+
 
 ### 字段的字符集设置
 	
@@ -137,5 +180,5 @@ MySQL的字符集、校对规则设置分为四个级别
 
 ## 字符集的修改
 
-更改字符集时，已存在的数据不会自动更新为新的字符集,需要对已存在的数据进行转码
-
+**更改字符集时，已存在的数据不会自动更新为新的字符集,需要对已存在的数据进行转码
+**
