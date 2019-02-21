@@ -275,6 +275,9 @@ Connection 19 线程执行结束后，释放状态描述
 	|        1 | 0.05457050 | select * from region left join business on region.business_id=business.business_id |
 	+----------+------------+------------------------------------------------------------------------------------+
 	1 rows in set, 1 warning (0.00 sec)
+	
+	mysql> show profile all;
+	... // 这个更详细
 
 show profiles 有许多参数 
 	
@@ -301,6 +304,9 @@ show profiles 有许多参数
 	+----------------------+----------+----------+------------+
 	16 rows in set, 1 warning (0.00 sec)
 
+具体使用方法查阅在线文档
+	
+	mysql> ? profile
 
 #### 通过trace分析优化器如何选择执行计划
 
