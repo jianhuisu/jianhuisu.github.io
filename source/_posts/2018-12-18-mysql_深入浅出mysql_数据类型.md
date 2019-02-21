@@ -320,6 +320,52 @@ name1末尾的空格被删除，name2末尾的空格被保留
 	1 row in set (0.00 sec)
 
 
+## 小技巧
+
+使用 procedure analyse() 现有字段进行分析
+
+	mysql> create table analyse_table(id int() auto_increment primary key,name char(50),pid int(11))engine=MyISAM charset=utf8;
+	ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') auto_increment primary key,name char(50),pid int(11))engine=MyISAM charset=utf' at line 1
+	mysql> create table analyse_table(id int(11) auto_increment primary key,name char(50),pid int(11))engine=MyISAM charset=utf8;
+	Query OK, 0 rows affected (0.00 sec)
+	
+	mysql> insert into analyse_table(name,pid) values('su',1),('zhao',1),('bao',1),('fu',1),('zhang',1);
+	Query OK, 5 rows affected (0.01 sec)
+	Records: 5  Duplicates: 0  Warnings: 0
+	
+	mysql> select * from analyse_table procedure analyse(1);
+	+---------------------------+-----------+-----------+------------+------------+------------------+-------+-------------------------+--------+-----------------------------------------------+
+	| Field_name                | Min_value | Max_value | Min_length | Max_length | Empties_or_zeros | Nulls | Avg_value_or_avg_length | Std    | Optimal_fieldtype                             |
+	+---------------------------+-----------+-----------+------------+------------+------------------+-------+-------------------------+--------+-----------------------------------------------+
+	| test_1.analyse_table.id   | 1         | 5         |          1 |          1 |                0 |     0 | 3.0000                  | 1.4142 | TINYINT(1) UNSIGNED NOT NULL                  |
+	| test_1.analyse_table.name | bao       | zhao      |          2 |          5 |                0 |     0 | 3.2000                  | NULL   | ENUM('bao','fu','su','zhang','zhao') NOT NULL |
+	| test_1.analyse_table.pid  | 1         | 1         |          1 |          1 |                0 |     0 | 1.0000                  | 0.0000 | TINYINT(1) UNSIGNED NOT NULL                  |
+	+---------------------------+-----------+-----------+------------+------------+------------------+-------+-------------------------+--------+-----------------------------------------------+
+	3 rows in set, 1 warning (0.00 sec)
+	
+怎么样，是不是很实用，不过这个工具在MySQL8.0被移除了
+
+	mysql> ? procedure analyse;
+	Name: 'PROCEDURE ANALYSE'
+	Description:
+	Syntax:
+	ANALYSE([max_elements[,max_memory]])
+	
+	*Note*:
+	
+	PROCEDURE ANALYSE() is deprecated as of MySQL 5.7.18, and is removed in
+	MySQL 8.0.
+	
+	ANALYSE() examines the result from a query and returns an analysis of
+	the results that suggests optimal data types for each column that may
+	help reduce table sizes. To obtain this analysis, append PROCEDURE
+	ANALYSE to the end of a SELECT statement:
+	
+	SELECT ... FROM ... WHERE ... PROCEDURE ANALYSE([max_elements,[max_memory]])
+
+
+
+
 ### TODO
 
 我有两个疑问 

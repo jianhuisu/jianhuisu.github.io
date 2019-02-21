@@ -85,6 +85,26 @@ Com_xxx代表xxx语句执行频率，show global 代表统计从mysql进程启�
 
 	mysql> show global status like "Uptime%"      
 
+
+show [global|session] status like "Handler_read%";
+
+	mysql> show global status like "Handler_read%";
+	+-----------------------+-------+
+	| Variable_name         | Value |
+	+-----------------------+-------+
+	| Handler_read_first    | 121   |
+	| Handler_read_key      | 3833  |
+	| Handler_read_last     | 0     |
+	| Handler_read_next     | 5784  |
+	| Handler_read_prev     | 0     |
+	| Handler_read_rnd      | 604   |
+	| Handler_read_rnd_next | 11067 |
+	+-----------------------+-------+
+	7 rows in set (0.00 sec)
+
+`Handler_read_key` 值越高，代表索引的使用率越高 
+`Handler_read_rnd_next` 值越高 代表查询效率低，并且应该建立索引补救
+
 备注：
 
 - show [global|session] status    查询mysql运行时可变变量
