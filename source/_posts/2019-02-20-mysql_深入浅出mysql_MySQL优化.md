@@ -385,7 +385,7 @@ show profiles 有许多参数
 定期检查、优化表  （optimize table ，check table）
 充分利用列有默认值
 表的字段尽量不使用自增长变量，在高并发情况下自增对性能有较大影响 
-
+将表分盘存储，平均磁盘IO
 
 
 ## Part.4 操作系统
