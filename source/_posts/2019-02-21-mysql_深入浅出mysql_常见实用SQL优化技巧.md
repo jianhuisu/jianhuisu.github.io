@@ -260,3 +260,38 @@ ignore index
 1. **SELECT**： 执行select操作，选择指定的列，插入到虚拟表VT7中。
 1. **DISTINCT**： 对VT7中的记录进行去重。产生虚拟表VT8.
 1. **ORDER BY**: 将虚拟表VT8中的记录按照<order_by_list>进行排序操作，产生虚拟表VT9.
+
+### 虚拟表、临时表、内存表、视图
+
+#### 虚拟表
+逻辑上存在，实际上并不存在，抽象概念帮助理解执行计划
+
+#### 临时表 
+当工作在十分大的表上运行时，在实际操作中你可能会需要运行很多的相关查询，来获的一个大量数据的小的子集。较好的办法，不是对整个表运行这些查询，而是让MySQL每次找出所需的少数记录，将记录选择到一个临时表，然后对这些表运行查询。
+	
+创建临时表
+
+(1)定义字段
+
+	CREATE TEMPORARY TABLE tmp_table (        
+	name VARCHAR(10) NOT NULL,        
+	value INTEGER NOT NULL)
+     
+(2)直接将查询结果导入临时表
+
+	CREATE TEMPORARY TABLE tmp_table SELECT * FROM table_name
+
+(3)查询临时表
+
+	select * from tmp_table
+(4)删除临时表
+
+	drop table tmp_table
+
+[参考博文](https://yypiao.iteye.com/blog/2359859 "内存表虚拟表临时表") 
+#### 视图
+预编译的SQL语句，并不保存实际数据
+
+#### 内存表
+表结构建在磁盘里，数据在内存里 ，当停止服务后，表中的数据丢失，而表的结构不会丢失。
+
