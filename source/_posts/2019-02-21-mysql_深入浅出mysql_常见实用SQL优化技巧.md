@@ -4,6 +4,8 @@ tags :
 	- MySQL
 ---
 
+知识点有点散 ————__————
+
 ## Point.1 定期检查表，分析表
 	
 	check table table_name
@@ -12,11 +14,11 @@ tags :
 	select * from table_name procedure analyse(1)
 	
 
-## 批量导入数据的优化
+## Point.2 批量导入数据的优化
 	
 未实操，待补充
 
-## 插入数据的优化
+## Point.3 插入数据的优化
 
 - 从统一客户端插入大量数据时，使用批量插入替代单条插入
 - 当从一个文件装载一个表时，使用`LOAD DATA INFILE`
@@ -24,7 +26,7 @@ tags :
 - 将索引文件与数据文件分开存储（MyISAM存储引擎表），建表时指定存储目录
  
 
-## 优化 GROUP BY
+## Point.4 优化 GROUP BY
 
 复习GROUP BY的语法
 
@@ -66,7 +68,7 @@ tags :
 	
 	
 
-## 优化 ORDER BY
+## Point.5 优化 ORDER BY
 	
 order by子句使用索引先决条件
 
@@ -91,7 +93,7 @@ order by 的字段混合 ASC 和 DESC
 	SELECT * FROM t1 ORDER BY key1, key2；
 
 
-## 优化OR条件
+## Point.6 优化OR条件
 
 对于包含 OR 的查询子句，OR之间的两个条件列都必须用到索引，OR查询子句中的索引才会生效
 
@@ -143,7 +145,7 @@ id有索引，name没有索引 select查询没有使用索引
 
 查询使用索引`sdfsdf`
 
-## 优化嵌套查询
+## Point.7 优化嵌套查询
 
 使用连接查询（JOIN）代替子查询。连接（JOIN）之所以更有效率一些，是因为 MySQL **不需要在内存中创建临时表**来完成这个逻辑上的需要两个步骤的查询工作。
 
@@ -169,7 +171,7 @@ id有索引，name没有索引 select查询没有使用索引
 > 原文：https://blog.csdn.net/light_language/article/details/76470342 
 
 
-## Point.1 使用SQL提示 HINT
+## Point.8 使用SQL提示 HINT
 	
 MySQL在生成执行计划时，会根据自己的预估生成最优的执行计划，但是我们也可以人为干预执行计划的生成，性质有点类似与现实生活中的走后门，本来MySQL计划使用field_1字段的索引，人为提示MySQl使用field_2上的索引。下面是一些常用的SQL HINT
 
@@ -247,4 +249,14 @@ ignore index
 	mysql> select SQL_BUFFER_RESULT * from user;
 	
 
+## 补充一个知识点:QUERY SQL 的执行顺序
 
+1. **FORM**: 对FROM左边的表和右边的表计算笛卡尔积，产生虚表VT1。
+1. **ON**: 对虚表VT1进行ON过滤，只有那些符合<join-condition>的行才会被记录在虚表VT2中。
+1. **JOIN**： 如果指定了OUTER JOIN（比如left join、 right join），那么保留表中未匹配的行就会作为外部行添加到虚拟表VT2中，产生虚拟表VT3。
+1. **WHERE**： 对虚拟表VT3进行WHERE条件过滤。只有符合<where-condition>的记录才会被插入到虚拟表VT4中。
+1. **GROUP BY**: 根据group by子句中的列，对VT4中的记录进行分组操作，产生VT5。
+1. **HAVING**： 对虚拟表VT5应用having过滤，只有符合<having-condition>的记录才会被 插入到虚拟表VT6中。
+1. **SELECT**： 执行select操作，选择指定的列，插入到虚拟表VT7中。
+1. **DISTINCT**： 对VT7中的记录进行去重。产生虚拟表VT8.
+1. **ORDER BY**: 将虚拟表VT8中的记录按照<order_by_list>进行排序操作，产生虚拟表VT9.
