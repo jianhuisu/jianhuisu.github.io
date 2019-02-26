@@ -2,7 +2,6 @@
 title : MySQL中的常用函数
 tags :
 	- MySQL
-	- 常用函数 
 ---
 
 ### 以下示例均操作user表
