@@ -2,7 +2,6 @@
 title : MySQL优化
 tags : 
 	- MySQL
-	- 优化
 ---
 
 MySQL的优化主要分为三个方面
