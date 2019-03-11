@@ -324,11 +324,21 @@ show profiles 有许多参数
 	
 数据库对象优化
 
-	分库分表(垂直拆分、水平拆分)，提高访问效率
-		将常用字段与非常用字段进行垂直拆分，将可归档的数据进行水平拆分
-	使用中间表提高查询速度
-	数据缓存策略
-	数据冗余策略
+#### 分库分表(垂直拆分、水平拆分)，提高访问效率
+
+垂直拆分：根据数据的活跃度进行拆分，降低IO。例如博客的标题 创建时间等 变化频率低 使用MyISAM表引擎 为冷数据。博客的浏览量 、博客的点赞量实时变化为热数据 使用Innodb方便行数据更新。
+
+水平拆分：根据具体的业务需求结合一定规则进行，分享一个栗子 [http://www.jb51.net/article/29771.htm](http://www.jb51.net/article/29771.htm "分表")
+
+一条比较实用的SQL：
+
+	create table new_user like user;
+	RENAME TABLE members TO members_bak,members_tmp TO members;
+
+####	使用中间表提高查询速度
+####	数据缓存策略
+####	数据冗余策略
+允许部分冗余减少连接查询
 
 ## Part.2 应用方面
 
@@ -375,6 +385,9 @@ show profiles 有许多参数
 
 - 创建应用端连接池，实现对连接的复用
 - 在应用端增加Cache层，实现对数据的复用	
+- 离线分析、流式计算 
+
+参考 [https://www.cnblogs.com/hhandbibi/p/7118740.html](https://www.cnblogs.com/hhandbibi/p/7118740.html "https://www.cnblogs.com/hhandbibi/p/7118740.html")
 
 ## Part.3 MySQL服务架构
 

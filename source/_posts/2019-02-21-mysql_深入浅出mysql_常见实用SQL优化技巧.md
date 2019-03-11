@@ -164,11 +164,7 @@ id有索引，name没有索引 select查询没有使用索引
 > b.假设nexted-loop join中驱动表过滤后的行数为K，那么while(outer_row)一定会循环K次，这时驱动表上索引的功能是比聚簇索引占有更小的空间，一个节点上的数据量会更大些，减少随机I/O。
 > c.如果被驱动表过滤后的行数为W，那么在while(outer_row)中两表连接条件上被驱动表还有机会利用索引来大大减少内循环的次数。
 > 所以过滤结果中的小表做驱动表。。优化的目标是尽可能减少JOIN中Nested Loop的循环次数
-> 
-> --------------------- 
-> 作者：light_language 
-> 来源：CSDN 
-> 原文：https://blog.csdn.net/light_language/article/details/76470342 
+ 
 
 
 ## Point.8 使用SQL提示 HINT
@@ -247,7 +243,11 @@ ignore index
 强制生成mysql结果集，尽快释放锁定的表，适用于结果集传递耗时长的场景
 
 	mysql> select SQL_BUFFER_RESULT * from user;
-	
+
+## Point.9 数据类型隐式转换
+
+	SELECT * FROM `job_details` WHERE `date` = '20190122' ORDER BY `date` DESC LIMIT 1000;	
+	SELECT * FROM `job_details` WHERE `date` = 20190122 ORDER BY `date` DESC LIMIT 1000;	
 
 ## 补充一个知识点:QUERY SQL 的执行顺序
 
@@ -295,3 +295,6 @@ ignore index
 #### 内存表
 表结构建在磁盘里，数据在内存里 ，当停止服务后，表中的数据丢失，而表的结构不会丢失。
 
+## 小结
+
+在索引使用方面，语句越简单越好，这样**执行计划稳定**，一定要使用绑定变量，减少语句解析，尽量减少表关联，尽量减少分布式事务。用户并发大，用户的请求十分密集时，批量更新要分批进行，避免堵塞。
