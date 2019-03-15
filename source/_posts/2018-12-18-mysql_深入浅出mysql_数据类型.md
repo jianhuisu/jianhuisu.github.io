@@ -266,6 +266,51 @@ name1末尾的空格被删除，name2末尾的空格被保留
 	+-------------------+-------------------+
 	2 rows in set (0.00 sec)
 
+char(10) 中的 10代表什么? 10个字节还是10个字符？
+
+	mysql> create table char_leng(name1 char(10),name2 varchar(5))charset=utf8;
+	Query OK, 0 rows affected (0.06 sec)
+	
+插入11个字母到`name1`字段，失败
+
+	mysql> insert into char_leng(name1,name2) values('ssssssssssd','sssssd');
+	ERROR 1406 (22001): Data too long for column 'name1' at row 1
+
+	mysql> insert into char_leng(name1,name2) values('ssssssssssd','sssssd');
+	ERROR 1406 (22001): Data too long for column 'name1' at row 1
+
+插入11个汉字到`name1`字段，成功
+
+	mysql> insert into char_leng(name1,name2) values('一二三四五六七八九','sssss');
+	Query OK, 1 row affected (0.00 sec)
+
+插入1个汉字
+	
+	mysql> insert into char_leng(name1,name2) values('一','sssss');
+	Query OK, 1 row affected (0.01 sec)
+
+观察存储数据内容实际长度
+	
+	mysql> select length(name1),name1,name2 from char_leng;
+	+---------------+-----------------------------+-------+
+	| length(name1) | name1                       | name2 |
+	+---------------+-----------------------------+-------+
+	|            27 | 一二三四五六七八九          | sssss |
+	|             3 | 一                          | sssss |
+	+---------------+-----------------------------+-------+
+	2 rows in set (0.00 sec)
+	
+	mysql> select version();
+	+-----------+
+	| version() |
+	+-----------+
+	| 5.7.23    |
+	+-----------+
+	1 row in set (0.00 sec)
+
+
+由此可知 `char(10)` 中数字10规定的是存储字符个个数(数字代表的意义跟mysql版本有关系)
+
 
 上面简单的介绍了mysql的各种数据类型，包括基本用途、物理存储、表示范围，这样在面对具体的应用时，可以根据应用的特点，争取在满足应用需求的基础上，用较小的存储代价换取较高的数据性能。
 
