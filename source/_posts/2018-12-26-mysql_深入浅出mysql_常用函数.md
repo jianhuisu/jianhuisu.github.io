@@ -148,7 +148,7 @@ REPEAT(str,n)
 	+------------------------+
 	1 row in set (0.00 sec)
 
-LOWWER(str)
+LOWER(str)
 UPPER(str)
 STRCMP(str1,str2):比较字符串str1与str2的ANSII码值大小。相等返回0，s1>s2 返回1，s1<s2 返回-1
 LOCATE 返回字符在字段中第一次出现的位置 没有出现则返回0 select LOCATE('第一军团',name) from region
