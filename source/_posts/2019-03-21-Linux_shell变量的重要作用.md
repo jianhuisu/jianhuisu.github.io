@@ -160,16 +160,18 @@ Tips:为什么环境变量可以被子程序引用呢
 
 ### Part.3 变量的特殊操作
 
-命令提示符 ： PS1
+#### 命令提示符 ： PS1
 
 	[root@vagrant-centos65 ~]# echo $PS1
 	[\u@\h \W]\$
 
-当前shell进程ID
+#### 当前shell进程ID
 	[root@vagrant-centos65 ~]# echo $$
 	3480
 
-命令执行回传码(一般上一个命令执行成功，该变量值为0,上一个命令执行失败，该变量为非0数字)
+#### 命令执行回传码
+
+一般上一个命令执行成功，该变量值为0,上一个命令执行失败，该变量为非0数字
 
 	[root@vagrant-centos65 ~]# echo $?
 	0
@@ -191,6 +193,30 @@ Tips:为什么环境变量可以被子程序引用呢
 
 
 这个命令执行回传码很有用，有时候处于业务的需要，我们需要同时执行两个命令
+
+如果上一个命令执行成功，则执行下一个命令
+
+	[root@iZ2zeh70iv04ct6uk02dscZ machine_su]# ls >/dev/null && echo "last command perfoms success"
+	last command perfoms success
+	[root@iZ2zeh70iv04ct6uk02dscZ machine_su]# lsord &&  echo "last command perfoms success"
+	bash: lsord: command not found
+
+如果上一个命令执行失败，则执行下一个命令
+
+	[root@iZ2zeh70iv04ct6uk02dscZ machine_su]# lsord ||  echo "last command perfoms success"
+	bash: lsord: command not found
+	last command perfoms success
+	
+	[root@iZ2zeh70iv04ct6uk02dscZ machine_su]# ls ||  echo "last command perfoms success"
+	foo1  foo1big5  foo2  foo3  index.html  index.php
+
+按顺序执行命令，是否执行与上一命令的执行返回码无关
+
+	[root@iZ2zeh70iv04ct6uk02dscZ machine_su]# lsord ; echo "last command perfoms success";echo 111
+	bash: lsord: command not found
+	last command perfoms success
+	111
+	[root@iZ2zeh70iv04ct6uk02dscZ machine_su]#
 
 
 ### 变量的测试、替换
