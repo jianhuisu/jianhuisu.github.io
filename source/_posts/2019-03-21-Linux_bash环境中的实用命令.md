@@ -49,7 +49,7 @@ tags :
 
 ### wildcard 通配符
 
-通俗点讲就是在bash中可以使用一些基础的正则匹配
+通俗点讲就是在bash中可以使用一些类似于正则匹配的东西，(但是语法与正则稍有不同 注意区别)
 
 	[root@vagrant-centos65 logs]# ll
 	total 332
