@@ -51,6 +51,29 @@ SQL 结构化查询语言
 建议varchar代替char，InnoDB在数据存储过程中，没有区分固定长度与变长序列，通俗点将就是，对char类型也会采取varchar类型的分配方式，而且char所占空间要大，
 - **Memory存储引擎**
 char 、varchar没有区别，因为目前该引擎使用固定的数据长度存储，最终都会以char类型处理
+
+Tips:对于上面InnoDB存储引擎优先选择varchar代替char的实验，将同样量级、同样内容的数据存入同样结构的表中，查看表文件所占磁盘空间
+
+	[root@vagrant-centos65 study]# ls -lhS
+	total 117M
+	-rw-r----- 1 root root  64M Mar 27 13:44 myisam_char_255_table.MYD
+	-rw-r----- 1 root root  26M Mar 27 16:13 innodb_char_255_table.ibd
+	-rw-r----- 1 root root  11M Mar 27 16:12 innodb_char_10_table.ibd
+	-rw-r----- 1 root root  11M Mar 27 16:14 innodb_varchar_255_table.ibd
+	-rw-r----- 1 root root 2.6M Mar 27 13:43 myisam_char_10_table.MYD
+	-rw-r----- 1 root root 2.2M Mar 27 16:02 myisam_varchar_255_table.MYD
+	-rw-r----- 1 root root 1.0K Mar 27 16:08 myisam_char_10_table.MYI
+	-rw-r----- 1 root root 1.0K Mar 27 16:08 myisam_char_255_table.MYI
+	-rw-r----- 1 root root 1.0K Mar 27 16:08 myisam_varchar_255_table.MYI
+
+因为事务的缘故，innodb存储引擎表在对varchar类型、char类型字段进行数据存储时所执行的存储过程并无不同，即效率相同。但是char类型字段要比varchar类型占用更多的空间。
+
+	innodb_char_255_table.ibd > innodb_varchar_255_table.ibd
+
+在同样量级、内容、结构的条件下，innodb表要比myisam占用更多的空间
+	
+	innodb_char_10_table.ibd > myisam_char_10_table.MYD
+
 #### text与blog
 
 ##### 性能问题
