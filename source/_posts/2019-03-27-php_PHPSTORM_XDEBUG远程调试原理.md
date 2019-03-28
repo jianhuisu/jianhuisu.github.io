@@ -76,7 +76,7 @@ vim php.ini
     xdebug.remote_port = 9001
     xdebug.remote_autostart = on  // 设置为自动打开 意为自动向远端断点调试器发送调试信息
 
-重启php-fpm，然后在phpstorm中启动监听调试信息按钮。
+然后在phpstorm中启动监听调试信息按钮。
 
 运行php脚本，即可发现`qq.php`在编辑器中断点处停止
 
