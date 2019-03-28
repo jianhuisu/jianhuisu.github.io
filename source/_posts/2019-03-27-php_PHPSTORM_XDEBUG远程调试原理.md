@@ -67,5 +67,17 @@ xdebug扩展在php.ini中有如下配置
 
 以上是描述是CGI模式下的通讯原理，但是如果是CLI模式下，如何触发调试呢
 
-	export XDEBUG_CONFIG="idekey=session_name"
-	php myscript.php
+vim php.ini 
+
+	[xdebug]
+    ...
+    xdebug.remote_enable = on
+    xdebug.remote_host = 172.16.125.153
+    xdebug.remote_port = 9001
+    xdebug.remote_autostart = on  // 设置为自动打开 意为自动向远端断点调试器发送调试信息
+
+重启php-fpm，然后在phpstorm中启动监听调试信息按钮。
+
+运行php脚本，即可发现`qq.php`在编辑器中断点处停止
+
+	php qq.php
