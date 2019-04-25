@@ -51,6 +51,32 @@ init后，当前目录生成一个Vagrantfile，设置网络连接为桥接模�
 	D:\www>develop_host>vagrant ssh
 	... 安装一些乱七八糟的软件
 
+查看实例状态
+
+	D:\www\ct7_node1>vagrant box list
+	==> vagrant: A new version of Vagrant is available: 2.2.4!
+	==> vagrant: To upgrade visit: https://www.vagrantup.com/downloads.html
+	
+	centos7     (virtualbox, 0)
+	ct6.5       (virtualbox, 0)
+	ct7_node1   (virtualbox, 0)
+	ct7_node2   (virtualbox, 0)
+	develop_env (virtualbox, 0)
+	
+	D:\www\ct7_node1>vagrant global-status
+	id       name    provider   state    directory
+	-------------------------------------------------------------------------
+	918fd20  default virtualbox running  D:/www/centos
+	119806d  default virtualbox running  D:/www/ct7_node1
+	fe0d6eb  default virtualbox poweroff D:/www/ct7_node2
+	
+	The above shows information about all known Vagrant environments
+	on this machine. This data is cached and may not be completely
+	up-to-date. To interact with any of the machines, you can go to
+	that directory and run Vagrant, or you can use the ID directly
+	with Vagrant commands from any directory. For example:
+	"vagrant destroy 1a2b3c4d"
+
 停止该虚拟机
 	
 	D:\www>develop_host>vagrant halt
