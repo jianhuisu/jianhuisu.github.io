@@ -130,8 +130,8 @@ MASTER_LOG_FILE、MASTER_LOG_POS 这两个参数的值需要在master控制台�
 
 `Slave_IO_Running`、`Slave_SQL_Running`两个值均为yes代表同步健康
 
-Slave_IO_Running：连接到主库，并读取主库的日志到本地，生成本地日志文件
-Slave_SQL_Running:读取本地日志文件，并执行日志里的SQL命令。
+-Slave_IO_Running：连接到主库，并读取主库的日志到本地，生成本地日志文件
+-Slave_SQL_Running:读取本地日志文件，并执行日志里的SQL命令。
 
 				
 ## 主从同步监测
@@ -205,7 +205,9 @@ slave服务器重启后需要重新启动`slave`线程,master数据库服务器�
 ## 参考资料
 
 搭建 https://www.cnblogs.com/zhoujie/p/mysql1.html
+
 同步错误处理 https://www.cnblogs.com/rongfengliang/p/5727087.html
+
 binlog介绍(强推) https://www.cnblogs.com/rjzheng/p/9721765.html
 
 
