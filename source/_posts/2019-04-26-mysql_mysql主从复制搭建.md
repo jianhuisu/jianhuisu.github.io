@@ -130,8 +130,8 @@ MASTER_LOG_FILE、MASTER_LOG_POS 这两个参数的值需要在master控制台�
 
 `Slave_IO_Running`、`Slave_SQL_Running`两个值均为yes代表同步健康
 
--Slave_IO_Running：连接到主库，并读取主库的日志到本地，生成本地日志文件
--Slave_SQL_Running:读取本地日志文件，并执行日志里的SQL命令。
+Slave_IO_Running：连接到主库，并读取主库的日志到本地，生成本地日志文件
+Slave_SQL_Running:读取本地日志文件，并执行日志里的SQL命令。
 
 				
 ## 主从同步监测
@@ -199,8 +199,9 @@ MASTER_LOG_FILE、MASTER_LOG_POS 这两个参数的值需要在master控制台�
 
 ## 小结
 
-slave服务器重启后需要重新启动`slave`线程,master数据库服务器宕机后,slave处于等待状态。
-通过以上方式可以配置一主多从的方式,但是如果主库挂了,切换主库会很麻烦,怎么办呢,能不能有多个主库呢...
+slave服务器停机一段时间,当slave再次开机时,这段时间内的差异数据会在开机后进行同步。为了保险起见,在重启slave之后,要检查一下slave线程是否执行正常。
+master数据库服务器停机后,slave处于等待同步状态,但是不影响查询,
+
 	
 ## 参考资料
 

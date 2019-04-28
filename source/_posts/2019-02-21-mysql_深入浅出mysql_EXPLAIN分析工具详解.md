@@ -227,6 +227,12 @@ tags :
 	
 索引的本质为数据结构
 
+## 参考资料
+
+https://www.douban.com/note/312979020/
+深入浅出msyql
+高性能mysql
+
 
 
 

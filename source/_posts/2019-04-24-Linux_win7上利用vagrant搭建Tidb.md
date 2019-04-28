@@ -97,10 +97,21 @@ init后，当前目录生成一个Vagrantfile，设置网络连接为桥接模�
 	D:\www>node2>vagrant box add node2 ./../develop_host/ct7node.box
 	...
 	
+销毁容器	
+
+	D:\www\ct7_node1>vagrant destroy fe0d6eb
+    default: Are you sure you want to destroy the 'default' VM? [y/N] y
+	==> default: Destroying VM and associated drives...
+
+	D:\www\ct7_node1>vagrant global-status
+	id       name    provider   state   directory
+	------------------------------------------------------------------------
+	918fd20  default virtualbox running D:/www/centos
+	119806d  default virtualbox running D:/www/ct7_node1
 
 ## Step.2 虚拟机中安装 Mysql 
 
-
+	...
 
 ## 参考地址
 
