@@ -1,11 +1,13 @@
 ---
 title : 如何使用索引才能生效
-tags : 
+categories : 
+ - mysql 
+tags :
 	- MySQL
 ---
 
 ## Question.1 索引是什么？
-	
+
 索引是一种数据结构	 帮助快速进行数据的检索，对相关列使用索引是提高SELECT性能的最佳途径。
 
 ## Question.2 常见索引有哪些？
@@ -13,7 +15,7 @@ tags :
 常见存储引擎支持的索引存储类型
 
 - MyISAM   ：BTREE
-- Innodb   ：BTREE 
+- Innodb   ：BTREE
 - MEMORY   ：BTREE、HASH
 - HEAP     ：BTREE、HASH
 
@@ -28,7 +30,7 @@ tags :
 - 合成索引
 
 ## Question.3 如何选择为哪些列加索引
-	
+
 - where条件中用到的字段可以考虑创建索引
 - 字段取值范围基数较大的
 
@@ -45,10 +47,10 @@ tags :
 
 	mysql> insert into text_md5(id,content,hash) values(1,repeat('sujianhui 2222',2),md5(content));
 	Query OK, 1 row affected (0.02 sec)
-	
+
 	mysql> insert into text_md5(id,content,hash) values(1,repeat('sujianhui 1111',2),md5(content));
 	Query OK, 1 row affected (0.04 sec)
-	
+
 	mysql> insert into text_md5(id,content,hash) values(2,repeat('sujianhui',2),md5(content));
 	Query OK, 1 row affected (0.04 sec)
 
@@ -62,9 +64,9 @@ tags :
 	| 1    | sujianhui 1111sujianhui 1111 | 6e597cf3ae70674e3f744f9c9b3b4a08 |
 	| 2    | sujianhuisujianhui           | 3bba68dd0b6895f4d1d11fec8fa8e8aa |
 	+------+------------------------------+----------------------------------+
- 
+
 使用散列值进行精准匹配
-	
+
 	mysql> select id,content from text_md5 where hash=md5(repeat('sujianhui',2));
 	+------+--------------------+
 	| id   | content            |
@@ -103,6 +105,6 @@ show [global|session] status like "Handler_read%";
 	+-----------------------+-------+
 	7 rows in set (0.00 sec)
 
-`Handler_read_key` 值越高，代表索引的使用率越高 
+`Handler_read_key` 值越高，代表索引的使用率越高
 `Handler_read_rnd_next` 值越高 代表查询效率低，并且应该建立索引补救
 

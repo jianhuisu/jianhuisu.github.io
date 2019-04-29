@@ -14,7 +14,7 @@ tags:
 ## 默认情况下Session的处理方式 ##
 
 1. 客户端(通常为浏览器)向服务器发起请求
-1. PHP检查http请求头中是否存在session_id,不存在则重新生成 
+1. PHP检查http请求头中是否存在session_id,不存在则重新生成
 1. 调用 `session_start()` 函数，php会在内部顺序调用 `SessionHandler` 的 `open()` 、`read()`方法,调用 `read()`方法时，PHP 会将从session文件中读取的内容自动反序列化返回为字符串，并填充为 $_SESSION 超级全局变量的值。
 1. 操作$_SESSION变量中的数据
 1. 脚本结束后，php会自动顺序调用 `SessionHandler` 的 `write()` 、`close()` 方法，调用`write()`,方法时，PHP会把 $_SESSION中 数据序列化为字符串写入对应的session文件
@@ -50,13 +50,13 @@ session\_set\_save_handler() 函数允许定义 user-level 的会话管理函数
 	class DbSession extends \SessionHandler
 	{
 	    private $savePath;
-	
+
 	    function __construct()
 	    {
 	        echo __FUNCTION__."<br/>";
 	        register_shutdown_function('session_write_close');
 	    }
-	
+
 	    function open($savePath, $sessionName)
 	    {
 	        echo __FUNCTION__."<br/>";
@@ -64,34 +64,34 @@ session\_set\_save_handler() 函数允许定义 user-level 的会话管理函数
 	        if (!is_dir($this->savePath)) {
 	            mkdir($this->savePath, 0777);
 	        }
-	
+
 	        return true;
 	    }
-	
+
 	    function close()
 	    {
 	        echo __FUNCTION__."<br/>";
 	        return true;
 	    }
-	
+
 	    function read($id)
 	    {
 	        echo __FUNCTION__."<br/>";
-	
+
 	        $file = "$this->savePath/sess_$id";
 	        if(file_exists($file)){
 	            return (string)@file_get_contents($file);
 	        }
-	
+
 	        return '';
 	    }
-	
+
 	    function write($id, $data)
 	    {
 	        echo __FUNCTION__."<br/>";
 	        return file_put_contents("$this->savePath/sess_$id", $data) === false ? false : true;
 	    }
-	
+
 	    function destroy($id)
 	    {
 	        echo __FUNCTION__."<br/>";
@@ -99,10 +99,10 @@ session\_set\_save_handler() 函数允许定义 user-level 的会话管理函数
 	        if (file_exists($file)) {
 	            unlink($file);
 	        }
-	
+
 	        return true;
 	    }
-	
+
 	    function gc($maxlifetime)
 	    {
 	        echo __FUNCTION__."<br/>";
@@ -111,25 +111,25 @@ session\_set\_save_handler() 函数允许定义 user-level 的会话管理函数
 	                unlink($file);
 	            }
 	        }
-	
+
 	        return true;
 	    }
-	
+
 	}
-	
+
 	$obj = new DbSession();
 	session_set_save_handler($obj);
 	@session_start();
 
 	var_dump($_SESSION);
 	$_SESSION['name'] = 'machine_su';
-	
+
 	echo "script has finished</br>";
 	exit;
 
 通过观察输出的顺序，也可以印证文章开始描述的会话存储过程。把上述代码中的文件操作改为 mysql操作，就是session共享的原理。
 附上session\_table
-	
+
 	CREATE TABLE session
 	(
 	    id CHAR(40) NOT NULL PRIMARY KEY,

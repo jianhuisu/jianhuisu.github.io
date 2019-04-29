@@ -1,6 +1,8 @@
 ---
 title : MySQL优化
-tags : 
+categories : 
+ - mysql 
+tags :
 	- MySQL
 ---
 
@@ -21,7 +23,7 @@ show global status like "Com_select%"
 	+-------------------------------------+-------+
 	| Variable_name                       | Value |
 	+-------------------------------------+-------+
-	| Com_commit                          | 0     |	
+	| Com_commit                          | 0     |
 	| Com_delete                          | 0     |
 	| Com_delete_multi                    | 0     |
 	| Com_insert                          | 0     |
@@ -49,11 +51,11 @@ Com_xxx代表xxx语句执行频率，show global 代表统计从mysql进程启�
 
 慢查询统计次数
 
-	mysql> show global status like "slow_queries%" 
+	mysql> show global status like "slow_queries%"
 
 系统连接次数
 
-	mysql> show global status like "Connections%"  
+	mysql> show global status like "Connections%"
 	+---------------+-------+
 	| Variable_name | Value |
 	+---------------+-------+
@@ -70,7 +72,7 @@ Com_xxx代表xxx语句执行频率，show global 代表统计从mysql进程启�
 		    $con = mysqli_connect('172.16.125.253','root','password','qq');
 		}
 	?>
-	
+
 	再次查询连接次数
 	mysql> show global status like "Connections%";
 	+---------------+-------+
@@ -82,7 +84,7 @@ Com_xxx代表xxx语句执行频率，show global 代表统计从mysql进程启�
 
  系统运行时间
 
-	mysql> show global status like "Uptime%"      
+	mysql> show global status like "Uptime%"
 
 
 show [global|session] status like "Handler_read%";
@@ -101,7 +103,7 @@ show [global|session] status like "Handler_read%";
 	+-----------------------+-------+
 	7 rows in set (0.00 sec)
 
-`Handler_read_key` 值越高，代表索引的使用率越高 
+`Handler_read_key` 值越高，代表索引的使用率越高
 `Handler_read_rnd_next` 值越高 代表查询效率低，并且应该建立索引补救
 
 备注：
@@ -109,7 +111,7 @@ show [global|session] status like "Handler_read%";
 - show [global|session] status    查询mysql运行时可变变量
 - show [global|session] variables 查询mysql服务预定义变量
 
-### step.2 定位执行缓慢的SQL 
+### step.2 定位执行缓慢的SQL
 
 #### 慢查询日志
 
@@ -135,7 +137,7 @@ show [global|session] status like "Handler_read%";
 	| slow_query_log_file       | /var/lib/mysql/vagrant-centos6.5-slow.log |
 	+---------------------------+-------------------------------------------+
 	5 rows in set (0.01 sec)
-	
+
 	mysql> show variables like 'long_query_time';
 	+-----------------+----------+
 	| Variable_name   | Value    |
@@ -179,7 +181,7 @@ Connection 19线程有SQL正在执行时，通过`show full processlist`可以�
 	| 19 | root            | 172.16.125.191:51591 | qq   | Query   |    1 | User sleep             | select sleep(5)  |
 	+----+-----------------+----------------------+------+---------+------+------------------------+------------------+
 	3 rows in set (0.00 sec)
-	
+
 Connection 19 线程执行结束后，释放状态描述
 
 	mysql> show full processlist;
@@ -203,7 +205,7 @@ Connection 19 线程执行结束后，释放状态描述
 	| 19 | root            | 172.16.125.191:51591 | qq   | Query   |    4 | User sleep             | select sleep(100)     |
 	+----+-----------------+----------------------+------+---------+------+------------------------+-----------------------+
 	3 rows in set (0.00 sec)
-	
+
 	mysql> kill query 19;
 	Query OK, 0 rows affected (0.00 sec)
 
@@ -211,9 +213,9 @@ Connection 19 线程执行结束后，释放状态描述
 
 - MySQL是单进程，多线程 进程挂了，整个服务也就挂了
 - Oracle在linux上默认是多进程，多进程的好处是一个进程崩溃不会影响另外的进程
-	
+
 ### step.3 分析SQL
-	
+
 使用工具分析低效SQL的执行计划
 
 #### explain/desc
@@ -226,27 +228,27 @@ Connection 19 线程执行结束后，释放状态描述
 	|  1 | SIMPLE      | business | NULL       | ALL  | PRIMARY       | NULL | NULL    | NULL |    2 |   100.00 | Using where; Using join buffer (Block Nested Loop) |
 	+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+----------------------------------------------------+
 	2 rows in set, 1 warning (0.01 sec)
-	
+
 参数说明
-	
-	select_type:	   SELECT的类型 	
+
+	select_type:	   SELECT的类型
 	table:             输出结果集的表
-	partitions:        
+	partitions:
 	type:              表的连接类型
 	possible_keys:     可能会使用到的索引
 	key:               实际使用到的索引
 	key_len:           索引字段的长度
-	ref:               
+	ref:
 	rows:              扫描的行数
-	filtered:          
+	filtered:
 	extra:             执行情况的说明与描述
 
-这里 explain 工具的使用，请自行查阅  
+这里 explain 工具的使用，请自行查阅
 
 #### 通过show profile分析SQL资源占用 定位具体原因
 
 查询profile配置情况
-	
+
 	mysql> show variables like "%profiling%";
 	+------------------------+-------+
 	| Variable_name          | Value |
@@ -258,15 +260,15 @@ Connection 19 线程执行结束后，释放状态描述
 	3 rows in set (0.01 sec)
 
 打开profiling
-	
+
 	set profiling=on
 
-执行SQL	
+执行SQL
 
 	mysql> select * from region left join business on region.business_id=business.business_id;
 
 进行分析
-	
+
 	mysql> show profiles;
 	+----------+------------+------------------------------------------------------------------------------------+
 	| Query_ID | Duration   | Query                                                                              |
@@ -274,12 +276,12 @@ Connection 19 线程执行结束后，释放状态描述
 	|        1 | 0.05457050 | select * from region left join business on region.business_id=business.business_id |
 	+----------+------------+------------------------------------------------------------------------------------+
 	1 rows in set, 1 warning (0.00 sec)
-	
+
 	mysql> show profile all;
 	... // 这个更详细
 
-show profiles 有许多参数 
-	
+show profiles 有许多参数
+
 	mysql> show profile cpu;
 	+----------------------+----------+----------+------------+
 	| Status               | Duration | CPU_user | CPU_system |
@@ -304,7 +306,7 @@ show profiles 有许多参数
 	16 rows in set, 1 warning (0.00 sec)
 
 具体使用方法查阅在线文档
-	
+
 	mysql> ? profile
 
 #### 通过trace分析优化器如何选择执行计划
@@ -314,14 +316,14 @@ show profiles 有许多参数
 ### step.4 根据分析结果，确定问题并采取对应的优化措施
 
 常见SQL层次优化技巧
-	
+
 	索引优化
 		最常规的优化手段
 	调整业务逻辑
 		不要过于依赖一条SQL解决所有问题
 	使用存储过程
 		数据库分担一部分计算压力
-	
+
 数据库对象优化
 
 #### 分库分表(垂直拆分、水平拆分)，提高访问效率
@@ -349,7 +351,7 @@ show profiles 有许多参数
 客户端连接MySQL服务器，三次握手数据包就要在客户端与服务端之间至少往返七次，再加上连接变量的设置，比如字符集、是否自动提交事务等
 
 	<?php
-	
+
 	for($i = 0; $i < 1 ;$i++)
 	{
 	    $con = mysqli_connect('172.16.125.253','root','xxxxxx','qq');
@@ -361,12 +363,12 @@ show profiles 有许多参数
 	[root@vagrant-centos65 bp]# tcpdump -i any port 3306 -S
 	tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
 	listening on any, link-type LINUX_SLL (Linux cooked), capture size 65535 bytes
-	
+
 	// 	创建连接
 	17:34:41.422072 IP 172.16.125.253.57380 > 172.16.125.253.mysql: Flags [S], seq 2382269401, win 32792, options [mss 16396,sackOK,TS val 28893111 ecr 0,nop,wscale 6], length 0
 	17:34:41.422086 IP 172.16.125.253.mysql > 172.16.125.253.57380: Flags [S.], seq 1999127578, ack 2382269402, win 32768, options [mss 16396,sackOK,TS val 28893111 ecr 28893111,nop,wscale 6], length 0
 	17:34:41.422098 IP 172.16.125.253.57380 > 172.16.125.253.mysql: Flags [.], ack 1999127579, win 513, options [nop,nop,TS val 28893111 ecr 28893111], length 0
-	
+
 	// 用户认证
 	17:34:41.422878 IP 172.16.125.253.mysql > 172.16.125.253.57380: Flags [P.], seq 1999127579:1999127657, ack 2382269402, win 512, options [nop,nop,TS val 28893112 ecr 28893111], length 78
 	17:34:41.422901 IP 172.16.125.253.57380 > 172.16.125.253.mysql: Flags [.], ack 1999127657, win 513, options [nop,nop,TS val 28893112 ecr 28893112], length 0
@@ -374,7 +376,7 @@ show profiles 有许多参数
 	17:34:41.422983 IP 172.16.125.253.mysql > 172.16.125.253.57380: Flags [.], ack 2382269511, win 512, options [nop,nop,TS val 28893112 ecr 28893112], length 0
 	17:34:41.423097 IP 172.16.125.253.mysql > 172.16.125.253.57380: Flags [P.], seq 1999127657:1999127668, ack 2382269511, win 512, options [nop,nop,TS val 28893112 ecr 28893112], length 11
 	17:34:41.423252 IP 172.16.125.253.57380 > 172.16.125.253.mysql: Flags [P.], seq 2382269511:2382269516, ack 1999127668, win 513, options [nop,nop,TS val 28893112 ecr 28893112], length 5
-	
+
 	// 断开连接
 	17:34:41.423312 IP 172.16.125.253.mysql > 172.16.125.253.57380: Flags [F.], seq 1999127668, ack 2382269516, win 512, options [nop,nop,TS val 28893112 ecr 28893112], length 0
 	17:34:41.423398 IP 172.16.125.253.57380 > 172.16.125.253.mysql: Flags [F.], seq 2382269516, ack 1999127669, win 513, options [nop,nop,TS val 28893112 ecr 28893112], length 0
@@ -384,8 +386,8 @@ show profiles 有许多参数
 当数据库的并发量变大时，连接的创建数直接影响数据库服务器的并发能力。那么，如何减少对MySQl的访问量呢
 
 - 创建应用端连接池，实现对连接的复用
-- 在应用端增加Cache层，实现对数据的复用	
-- 离线分析、流式计算 
+- 在应用端增加Cache层，实现对数据的复用
+- 离线分析、流式计算
 
 参考 [https://www.cnblogs.com/hhandbibi/p/7118740.html](https://www.cnblogs.com/hhandbibi/p/7118740.html "https://www.cnblogs.com/hhandbibi/p/7118740.html")
 
@@ -404,7 +406,7 @@ show profiles 有许多参数
 
 至少部署两台MySQL服务器构成一个小的集群，主要有2个目的：
 
-- 高可用性：在主机挂掉后，只产生单点故障 自动故障转移，使前端服务对用户无影响。 
+- 高可用性：在主机挂掉后，只产生单点故障 自动故障转移，使前端服务对用户无影响。
 - 读写分离：将主库读压力分流到从库上。 可在客户端组件上实现负载均衡，根据不同服务器的运行情况，分担不同比例的读请求压力。
 
 集群的节点主要分为三个层次
@@ -422,7 +424,7 @@ show profiles 有许多参数
 
 定期检查、优化表  （optimize table ，check table）
 充分利用列有默认值
-表的字段尽量不使用自增长变量，在高并发情况下自增对性能有较大影响 
+表的字段尽量不使用自增长变量，在高并发情况下自增对性能有较大影响
 将表分盘存储，平均磁盘IO
 
 

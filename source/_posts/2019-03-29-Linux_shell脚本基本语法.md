@@ -1,5 +1,7 @@
 ---
 title : shell脚本基本语法
+categories : 
+ - Linux 
 tags :
 	- Linux
 ---
@@ -9,7 +11,7 @@ tags :
 ### shell脚本中空格很重要,会影响语义的解析
 
 声明变量时注意`=`号左右不要有空格
-	
+
 	#!/bin/bash
 	a=1       // 合法
 	a = 1     // 非法
@@ -27,7 +29,7 @@ if语法结构中 if与[,[与其中内容需要使用空格隔开
 错误使用空格
 
 	#!/bin/bash
-    if[$a = 1]   
+    if[$a = 1]
     then
         echo 'success'
     else
@@ -90,7 +92,7 @@ shell也不例外 包含下面四个部分
 	esac
 
 ### for
-	
+
 	for 变量 in '值1' '值2' '值3' ... '值n'
 	do
 	    做某些事
@@ -106,7 +108,7 @@ shell也不例外 包含下面四个部分
 	done
 
 循环输出 'dog' 、'cat' 、'pig'
-	
+
 	for animal in 'dog' 'cat' 'pig'
 	do
 	        echo $item;
@@ -120,7 +122,7 @@ shell也不例外 包含下面四个部分
 
 	if [ $string1 == $string2 ]
 	if [ $string1 != $string2 ]
-	
+
 字符串 string 是否为空。z是 zero 的首字母，是英语「零」的意思 `-z $string`
 
 	if [ -z $string1 ]
@@ -135,21 +137,21 @@ shell也不例外 包含下面四个部分
 
 	if [ $num1 -eq $num2 ]
 	if [ $num1 -nq $num2 ]
-	
+
 数字 num1 是否小于 num2。lt 是`lower than`的缩写
 
 	$num1 -lt $num2
 
-数字 num1 是否小于或等于num2。`le`是`lower or equal`的缩写 
+数字 num1 是否小于或等于num2。`le`是`lower or equal`的缩写
 
 	$num1 -le $num2
 
 数字 num1 是否大于 num2。gt 是 greater than 的缩写，是英语「大于」的意思。
-	
+
 	$num1 -gt $num2
 
 数字 num1 是否大于或等于 num2。`ge`是`greater or equal`的缩写
-	
+
 	$num1 -ge $num2
 
 ### 文件相关运算符
@@ -157,7 +159,7 @@ shell也不例外 包含下面四个部分
 `file`变量代表文件的路径
 
 文件是否存在。e 是 exist 的首字母，表示「存在」。
-	
+
 	if [ -e $file ]
 
 文件是否是一个目录。因为 Linux 中所有都是文件，目录也是文件的一种。d 是 directory 的首字母，表示「目录」。
@@ -196,18 +198,18 @@ shell也不例外 包含下面四个部分
 ## 函数
 
 ### 函数的声明
-	
+
 	function getName {
         echo $1
 	}
-	
+
 ### 函数的调用与传参
 
 	setName()
 	{
 	        echo $1;
 	}
-	
+
 	setName sujianhui
 
 函数传参：括号内不能传参，传参方式 类似于shell脚本传参使用`$n`接收参数`$?`获取return状态值
@@ -215,29 +217,29 @@ shell也不例外 包含下面四个部分
 ### 变量的作用域
 
 	#!/bin/bash
-  
+
 	self_define_func() {
 	      local local_variable="I am local vaiable"
-	      
+
 	      echo "vaiiable value in function :$local_variable, not change though out has a same name va    riable"   7 }
-	
+
 	show_val(){
-	      echo $1 
-	}       
-	
+	      echo $1
+	}
+
 	local_variable="I am global variable"
 	show_val "$local_variable"
-	
+
 	self_define_func
 	show_val "$local_variable"
 
 执行一下(当函数实参中包含空格时，传递参数使用双引号包含起来即可)
 
-	[root@vagrant-centos65 machine_su]# ./script.sh 
+	[root@vagrant-centos65 machine_su]# ./script.sh
 	I am global variable
 	vaiiable value in function :I am local vaiable, not change though out has a same name variable
 	I am global variable
-	
+
 变量声明时，默认全局变量(global)，如果要在函数内部声明一个局部变量,前面添加`local`关键字修饰即可
 
 

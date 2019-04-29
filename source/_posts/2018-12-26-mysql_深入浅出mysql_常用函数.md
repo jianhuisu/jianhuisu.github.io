@@ -1,5 +1,7 @@
 ---
 title : MySQL中的常用函数
+categories : 
+ - mysql 
 tags :
 	- MySQL
 ---
@@ -17,7 +19,7 @@ tags :
 	1 row in set (0.00 sec)
 
 表中数据
-	
+
 	mysql> select * from user;
 	+----+---------------+
 	| id | name          |
@@ -50,7 +52,7 @@ CONCAT(name1,name2,...)
 	| NULL           | NULL          |
 	+----------------+---------------+
 	8 rows in set (0.00 sec)
-	
+
 	mysql> select concat(1,id,name),name from user;
 	+-------------------+---------------+
 	| concat(1,id,name) | name          |
@@ -92,7 +94,7 @@ SUBSTRING(str,x,y):从第x位开始y个字符
 	| suj                 |
 	+---------------------+
 	1 row in set (0.00 sec)
-	
+
 REPLACE(str，a，b)  将字符串str中所有的字符串a替换为字符串b
 
 	mysql> select replace(name,'zhao','su') from user;
@@ -166,7 +168,7 @@ LOCATE 返回字符在字段中第一次出现的位置 没有出现则返回0 s
 
 CURDATE() 返回当前年月日
 CURTIME() 返回当前时间
-NOW()     返回当前完整时间  
+NOW()     返回当前完整时间
 
 	mysql> select curdate(),curtime(),now();
 	+------------+-----------+---------------------+
@@ -187,7 +189,7 @@ FROM_UNIXTIME(1543981584)   ：将时间戳转化为日期格式字符串
 	+------------------------------+---------------------------+
 	1 row in set (0.00 sec)
 
-MONTHNAME(date)	 返回月份的英文名 
+MONTHNAME(date)	 返回月份的英文名
 WEEK(date)
 YEAR(date)
 HOUR(date)
@@ -200,7 +202,7 @@ HOUR(date)
 	+--------------------+--------------------+-----------------------------+
 	1 row in set (0.00 sec)
 
-DATE_FORMATE(date,fmt)	
+DATE_FORMATE(date,fmt)
 
 DATE_ADD():计算当前时间指定时间段后日期。。
 DATE_DIFF():计算两个时间点之间相差天数
@@ -212,10 +214,10 @@ DATE_DIFF():计算两个时间点之间相差天数
 	| 2019-01-29 13:33:18 | 2018-12-29 13:33:18 |
 	+---------------------+---------------------+
 	1 row in set (0.00 sec)
-	
-	mysql> 
-	mysql> 
-	mysql> 
+
+	mysql>
+	mysql>
+	mysql>
 	mysql> select date_diff('2018-12-29','2019-02-04');
 	ERROR 1305 (42000): FUNCTION qq.date_diff does not exist
 	mysql> select datediff('2018-12-29','2019-02-04');
@@ -250,7 +252,7 @@ IF(ifvalue,value1,value2)
 IFNULL(ifvalues,value1)
 
 	mysql> select ifnull(name,'my name is null') from user;
-	
+
 	+--------------------------------+
 	| ifnull(name,'my name is null') |
 	+--------------------------------+
@@ -283,7 +285,7 @@ case when exp then ... else ... end
 	8 rows in set (0.01 sec)
 
 case ... when exp then ... else ... end，这个函数在进行数据拆分重组时非常有用。举个例子：我上学那会，六年级属于初中的一年级，五年级为小学的最后一级,创建数据表存储层级关系:
-	
+
 	mysql> create table origanization(
 		id int(11) auto_increment primary key,
 		org1 char(50),
@@ -291,7 +293,7 @@ case ... when exp then ... else ... end，这个函数在进行数据拆分重�
 		org3 char(50)
 	);
 	Query OK, 0 rows affected (0.26 sec)
-		
+
 	mysql> desc origanization;
 	+-------+----------+------+-----+---------+----------------+
 	| Field | Type     | Null | Key | Default | Extra          |
@@ -303,8 +305,8 @@ case ... when exp then ... else ... end，这个函数在进行数据拆分重�
 	+-------+----------+------+-----+---------+----------------+
 	4 rows in set (0.00 sec)
 
-将阶段、年级、班级数据存入表	
-	mysql> insert into origanization(org1,org2,org3) 
+将阶段、年级、班级数据存入表
+	mysql> insert into origanization(org1,org2,org3)
 		values('小学','五年级','一班'),
 		('小学','五年级','2班'),
 		('初中','六年级','一班'),
@@ -313,7 +315,7 @@ case ... when exp then ... else ... end，这个函数在进行数据拆分重�
 		('高中','高一','2班');
 	Query OK, 6 rows affected (0.18 sec)
 	Records: 6  Duplicates: 0  Warnings: 0
-	
+
 	mysql> select * from origanization;
 	+----+--------+-----------+--------+
 	| id | org1   | org2      | org3   |
@@ -328,7 +330,7 @@ case ... when exp then ... else ... end，这个函数在进行数据拆分重�
 	6 rows in set (0.00 sec)
 
 但是等我弟弟上学时，六年级被划分成为小学的最后一级,因为种种原因,不能更改原数据，但是需要查看新的划分关系，可以使用case函数生成中间表：
-	
+
 	mysql> select case org2 when '六年级' then '小学' else org1 end as new_org1,org2,org3 from origanization;
 	+----------+-----------+--------+
 	| new_org1 | org2      | org3   |
@@ -343,10 +345,10 @@ case ... when exp then ... else ... end，这个函数在进行数据拆分重�
 	6 rows in set (0.00 sec)
 
 特别注意，case后的字段不能直接在where条件中使用，如需使用需要以中间表的形式引用
-	
+
 	mysql> select case org2 when '六年级' then '小学' else org1 end as new_org1,org2,org3 from origanization where new_org1='小学';
 	ERROR 1054 (42S22): Unknown column 'new_org1' in 'where clause'
-	 
+
 
 ### 其它函数
 
@@ -365,7 +367,7 @@ avg()
 根据分组时**各自检索到**的数据行数进行求平均数
 
 	select avg(work_hour) as avg_work_hour,em from compile_add_on_work_hour group by em
-	
+
 
 ### 小结
 	MySQL有很多内置函数，功能实用且性能高效，在空闲之余应该经常看一看MySQL的官方手册

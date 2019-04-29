@@ -1,5 +1,7 @@
 ---
 title : MySQL存储引擎的选择
+categories : 
+ - mysql 
 tags :
 	- MySQL
 keywords : "深入浅出MySQL,mysql"
@@ -23,7 +25,7 @@ SQL 结构化查询语言
 
 动态表
 
-存储空间根据实际数据大小划分，相当于C中的动态分配内存，容易产生内存碎片。所以需要定期使用 `OPTMIZE TABLE` 或 `myisamchk -r` 命令改善性能，出现故障时恢复难度较大 
+存储空间根据实际数据大小划分，相当于C中的动态分配内存，容易产生内存碎片。所以需要定期使用 `OPTMIZE TABLE` 或 `myisamchk -r` 命令改善性能，出现故障时恢复难度较大
 
 压缩存储
 
@@ -71,7 +73,7 @@ Tips:对于上面InnoDB存储引擎优先选择varchar代替char的实验，将�
 	innodb_char_255_table.ibd > innodb_varchar_255_table.ibd
 
 在同样量级、内容、结构的条件下，innodb表要比myisam占用更多的空间
-	
+
 	innodb_char_10_table.ibd > myisam_char_10_table.MYD
 
 #### text与blog
@@ -91,7 +93,7 @@ Tips:对于上面InnoDB存储引擎优先选择varchar代替char的实验，将�
 	4.0K	text_table.MYI
 
 删除表中部分数据，然后再次查看占用物理空间，没有变化：
-	
+
 	mysql> delete from text_table where id=9;
 
 	[root@vagrant-centos65 qq]# du -sh text_table*
@@ -100,7 +102,7 @@ Tips:对于上面InnoDB存储引擎优先选择varchar代替char的实验，将�
 	4.0K	text_table.MYI
 
 即使重启了mysql服务，依然没有变化：
-	
+
 	[root@vagrant-centos65 qq]# service mysqld restart
 	Stopping mysqld:                                           [  OK  ]
 	Starting mysqld:                                           [  OK  ]
@@ -111,16 +113,16 @@ Tips:对于上面InnoDB存储引擎优先选择varchar代替char的实验，将�
 	4.0K	text_table.MYI
 
 对mysql表进行优化 `optimize table text_table`，这时，删除造成的空间空洞才真正被释放：
-	
+
 	mysql> optimize table text_table;
-	
+
 	+---------------+----------+----------+----------+
 	| Table         | Op       | Msg_type | Msg_text |
 	+---------------+----------+----------+----------+
 	| qq.text_table | optimize | status   | OK       |
 	+---------------+----------+----------+----------+
 	1 row in set (0.05 sec)
-	
+
 	...
 
 	[root@vagrant-centos65 qq]# du -sh text_table*
@@ -140,10 +142,10 @@ Tips:对于上面InnoDB存储引擎优先选择varchar代替char的实验，将�
 
 	mysql> insert into text_md5(id,content,hash) values(1,repeat('sujianhui 2222',2),md5(content));
 	Query OK, 1 row affected (0.02 sec)
-	
+
 	mysql> insert into text_md5(id,content,hash) values(1,repeat('sujianhui 1111',2),md5(content));
 	Query OK, 1 row affected (0.04 sec)
-	
+
 	mysql> insert into text_md5(id,content,hash) values(2,repeat('sujianhui',2),md5(content));
 	Query OK, 1 row affected (0.04 sec)
 
@@ -157,9 +159,9 @@ Tips:对于上面InnoDB存储引擎优先选择varchar代替char的实验，将�
 	| 1    | sujianhui 1111sujianhui 1111 | 6e597cf3ae70674e3f744f9c9b3b4a08 |
 	| 2    | sujianhuisujianhui           | 3bba68dd0b6895f4d1d11fec8fa8e8aa |
 	+------+------------------------------+----------------------------------+
- 
+
 使用散列值进行精准匹配
-	
+
 	mysql> select id,content from text_md5 where hash=md5(repeat('sujianhui',2));
 	+------+--------------------+
 	| id   | content            |
@@ -197,7 +199,7 @@ eg.
 	  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
 	  PRIMARY KEY (`business_id`)
 	) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8
-	
+
 	// 军团表
 	CREATE TABLE `region` (
 	  `region_id` int(11) NOT NULL,
@@ -232,7 +234,7 @@ SET FOREIGN_KEY_CHECKS=1;#  恢复线程中外键检查
 eg.
 
 	SET FOREIGN_KEY_CHECKS=0;
-	
+
 	CREATE TABLE IF NOT EXISTS `region` (
 	  `region_id` int(11) NOT NULL,
 	  `name` varchar(50) DEFAULT NULL,
@@ -253,7 +255,7 @@ eg.
 	/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 	/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 	/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-	
+
 	CREATE TABLE IF NOT EXISTS `business` (
 	  `business_id` int(10) NOT NULL AUTO_INCREMENT,
 	  `name` varchar(50) DEFAULT NULL,

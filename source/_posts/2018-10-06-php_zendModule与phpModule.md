@@ -1,7 +1,7 @@
 ---
 layout:     post
-title:      PHP源码分析 
-subtitle:   zendModule Vs phpModule 
+title:      PHP源码分析
+subtitle:   zendModule Vs phpModule
 date:       2018-10-08
 author:     machine_su
 header-img: img/post-bg-kuaidi.jpg

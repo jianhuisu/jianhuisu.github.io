@@ -1,6 +1,8 @@
 ---
 title : PHPSTORM+XDEBUG远程断点调试原理
-tags : 
+categories : 
+ - php 
+tags :
 	- PHP
 ---
 
@@ -25,7 +27,7 @@ xdebug扩展在php.ini中有如下配置
 
 - dbgp ： dbgp是一个简单的协议，用于调试应用程序的语言工具和引擎
 - remote_host： phpstorm 所在主机的IP
-- remote_port： phpstorm 所在主机用于调试信息发送与接收的端口	
+- remote_port： phpstorm 所在主机用于调试信息发送与接收的端口
 
 ## 开发机端(phpstorm所在机器 Windows系统)：
 
@@ -34,13 +36,13 @@ xdebug扩展在php.ini中有如下配置
 	Debug port : 9001  // 与服务器php.ini中配置的`xdebug.remote_port`值保持一致
 
 
-在菜单`phpstrom setting > languages & frameworks > php > debug > DBGp proxy` 中设置 
+在菜单`phpstrom setting > languages & frameworks > php > debug > DBGp proxy` 中设置
 
 	IDE key : PHPSTORM
 	Host    : 172.16.125.253
 	Port    : 80
 
-  
+
 ## 运行
 
 浏览器中输入
@@ -67,7 +69,7 @@ xdebug扩展在php.ini中有如下配置
 
 以上是描述是CGI模式下的通讯原理，但是如果是CLI模式下，如何触发调试呢
 
-vim php.ini 
+vim php.ini
 
 	[xdebug]
     ...

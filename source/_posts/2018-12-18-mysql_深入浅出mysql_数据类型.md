@@ -1,5 +1,7 @@
 ---
 title : MySQL支持的数据类型
+categories : 
+ - mysql 
 tags :
 	- MySQL
 ---
@@ -7,15 +9,15 @@ tags :
 想要熟练的创建数据表，就需要打好牢固的mysql基础
 
 
-### 整数 int 
+### 整数 int
 
-在数据库中，一个int类型数字占用4个字节，即4*8=32位，那么一个unsigned int类型字段所能表示的最大取值区间为 `0~2^32-1`  
-	
+在数据库中，一个int类型数字占用4个字节，即4*8=32位，那么一个unsigned int类型字段所能表示的最大取值区间为 `0~2^32-1`
+
 	mysql> ? int
 	Name: 'INT'
 	Description:
 	INT[(M)] [UNSIGNED] [ZEROFILL]
-	
+
 	A normal-size integer. The signed range is -2147483648 to 2147483647.
 	The unsigned range is 0 to 4294967295.
 
@@ -32,7 +34,7 @@ tags :
 
 	mysql> insert into data_category(id1,id2) values(2147483647,4);
 	Query OK, 1 row affected (0.07 sec)
-	
+
 	mysql> insert into data_category(id1,id2) values(2147483648,4);
 	ERROR 1264 (22003): Out of range value for column 'id1' at row 1
 
@@ -48,7 +50,7 @@ tags :
 
 	decimal(M,N) 实际上以字符串的方式存储
 
-float(M,N)  
+float(M,N)
 
 - M 称为精度，M为有效数字个数
 - N 称为标度，N为小数点后有效数字个数
@@ -69,10 +71,10 @@ todo 这里定点数的截取有问题
 	3 rows in set (0.00 sec)
 
 进行插入，按照逻辑`id3`应该截取为`1.23`而不是`1.24`
-	
+
 	mysql> insert into decimal_number(id1,id2,id3) values(1.235,1.235,1.235);
 	Query OK, 1 row affected, 1 warning (0.09 sec)
-	
+
 	mysql> select * from decimal_number;
 	+------+------+------+
 	| id1  | id2  | id3  |
@@ -83,7 +85,7 @@ todo 这里定点数的截取有问题
 
 	mysql> insert into decimal_number(id1,id2,id3) values(111.235,111.235,111.235);
 	Query OK, 1 row affected, 1 warning (0.12 sec)
-	
+
 	mysql> select * from decimal_number;
 	+--------+--------+--------+
 	| id1    | id2    | id3    |
@@ -92,7 +94,7 @@ todo 这里定点数的截取有问题
 	| 111.23 | 111.23 | 111.24 |
 	+--------+--------+--------+
 	2 rows in set (0.00 sec)
-	
+
 这里应该跟SQL_MODE有关，等待后续完善
 
 ### 时间类型
@@ -125,10 +127,10 @@ todo 这里定点数的截取有问题
 
 
 将当前时间插入
-	 
+
 	mysql> insert into tmp_table_date(id1,id2,id3,id4,id5) values(now(),now(),now(),now(),now());
 	Query OK, 1 row affected, 1 warning (0.12 sec)
-	
+
 	mysql> select * from tmp_table_date;
 	+------------+---------------------+---------------------+----------+------+
 	| id1        | id2                 | id3                 | id4      | id5  |
@@ -138,8 +140,8 @@ todo 这里定点数的截取有问题
 	1 row in set (0.00 sec)
 
 这里使用了三个常见时间函数，函数返回值随系统时间改变
-	
-	
+
+
 	mysql> SELECT NOW(),CURDATE(),CURTIME();
 	+---------------------+------------+-----------+
 	| NOW()               | CURDATE()  | CURTIME() |
@@ -147,7 +149,7 @@ todo 这里定点数的截取有问题
 	| 2018-12-20 11:00:35 | 2018-12-20 | 11:00:35  |
 	+---------------------+------------+-----------+
 	1 row in set (0.00 sec)
-	
+
 	mysql> SELECT NOW(),CURDATE(),CURTIME();
 	+---------------------+------------+-----------+
 	| NOW()               | CURDATE()  | CURTIME() |
@@ -155,10 +157,10 @@ todo 这里定点数的截取有问题
 	| 2018-12-20 11:00:38 | 2018-12-20 | 11:00:38  |
 	+---------------------+------------+-----------+
 	1 row in set (0.00 sec)
-	
+
 
 `YEAR` 类型不会自动截取，插入错误
-	
+
 	mysql> insert into tmp_table_date(id1,id2,id3,id4,id5) values('2018-12-20 11:00:38','2018-12-20 11:00:38','2018-12-20 11:00:38','2018-12-20 11:00:38','2018-12-20 11:00:38');
 	ERROR 1265 (01000): Data truncated for column 'id5' at row 1
 	mysql> select * from tmp_table_date;
@@ -171,7 +173,7 @@ todo 这里定点数的截取有问题
 	2 rows in set (0.00 sec)
 
 `DATE`,`TIME` 类型虽然插入成功，但是系统发出警告：
-	
+
 	mysql> insert into tmp_table_date(id1,id2,id3,id4,id5) values('2018-12-20 11:00:38','2018-12-20 11:00:38','2018-12-20 11:00:38','2018-12-20 11:00:38','2018');
 	Query OK, 1 row affected, 2 warnings (0.09 sec)
 
@@ -188,7 +190,7 @@ todo 这里定点数的截取有问题
 
 	mysql> insert into tmp_table_date(id1,id2,id3,id4,id5) values('2018-12-20','2018-12-20 11:00:38','2018-12-20 11:00:38','11:00:38','2018');
 	Query OK, 1 row affected (0.08 sec)
-	
+
 	mysql> select * from tmp_table_date;
 	+------------+---------------------+---------------------+----------+------+
 	| id1        | id2                 | id3                 | id4      | id5  |
@@ -212,7 +214,7 @@ todo 这里定点数的截取有问题
 
 	mysql> create table tmp_table_string(name1 char(4),name2 varchar(4));
 	Query OK, 0 rows affected (0.08 sec)
-	
+
 	mysql> desc tmp_table_string;
 	+-------+------------+------+-----+---------+-------+
 	| Field | Type       | Null | Key | Default | Extra |
@@ -221,10 +223,10 @@ todo 这里定点数的截取有问题
 	| name2 | varchar(4) | YES  |     | NULL    |       |
 	+-------+------------+------+-----+---------+-------+
 	2 rows in set (0.00 sec)
-	
+
 	mysql> insert into tmp_table_string(name1,name2) values("s  ","s   ");
 	Query OK, 1 row affected (0.24 sec)
-	
+
 	mysql> select * from tmp_table_string;
 	+-------+-------+
 	| name1 | name2 |
@@ -234,7 +236,7 @@ todo 这里定点数的截取有问题
 	1 row in set (0.00 sec)
 
 name1末尾的空格被删除，name2末尾的空格被保留
-	
+
 	mysql> select length(name1),length(name2) from tmp_table_string;
 	+---------------+---------------+
 	| length(name1) | length(name2) |
@@ -244,10 +246,10 @@ name1末尾的空格被删除，name2末尾的空格被保留
 	1 row in set (0.00 sec)
 
 注意，忽略的是字符串末尾空格，而非字符串头
-	
+
 	mysql> insert into tmp_table_string(name1,name2) values(" s ","s   ");
 	Query OK, 1 row affected (0.02 sec)
-	
+
 	mysql> select length(name1),length(name2) from tmp_table_string;
 	+---------------+---------------+
 	| length(name1) | length(name2) |
@@ -256,7 +258,7 @@ name1末尾的空格被删除，name2末尾的空格被保留
 	|             2 |             4 |
 	+---------------+---------------+
 	2 rows in set (0.00 sec)
-	
+
 	mysql> select concat(name1,'_'),concat(name2,'_') from tmp_table_string;
 	+-------------------+-------------------+
 	| concat(name1,'_') | concat(name2,'_') |
@@ -270,7 +272,7 @@ char(10) 中的 10代表什么? 10个字节还是10个字符？
 
 	mysql> create table char_leng(name1 char(10),name2 varchar(5))charset=utf8;
 	Query OK, 0 rows affected (0.06 sec)
-	
+
 插入11个字母到`name1`字段，失败
 
 	mysql> insert into char_leng(name1,name2) values('ssssssssssd','sssssd');
@@ -285,12 +287,12 @@ char(10) 中的 10代表什么? 10个字节还是10个字符？
 	Query OK, 1 row affected (0.00 sec)
 
 插入1个汉字
-	
+
 	mysql> insert into char_leng(name1,name2) values('一','sssss');
 	Query OK, 1 row affected (0.01 sec)
 
 观察存储数据内容实际长度
-	
+
 	mysql> select length(name1),name1,name2 from char_leng;
 	+---------------+-----------------------------+-------+
 	| length(name1) | name1                       | name2 |
@@ -299,7 +301,7 @@ char(10) 中的 10代表什么? 10个字节还是10个字符？
 	|             3 | 一                          | sssss |
 	+---------------+-----------------------------+-------+
 	2 rows in set (0.00 sec)
-	
+
 	mysql> select version();
 	+-----------+
 	| version() |
@@ -317,10 +319,10 @@ char(10) 中的 10代表什么? 10个字节还是10个字符？
 #### BINARY 与 VARBINARY
 
 #### ENUM 与 SET
-	
+
 	mysql> create table tmp_table_enum( id int(11),name enum('M','F') );
 	Query OK, 0 rows affected (0.21 sec)
-	
+
 	mysql> desc tmp_table_enum;
 	+-------+---------------+------+-----+---------+-------+
 	| Field | Type          | Null | Key | Default | Extra |
@@ -330,11 +332,11 @@ char(10) 中的 10代表什么? 10个字节还是10个字符？
 	+-------+---------------+------+-----+---------+-------+
 	2 rows in set (0.01 sec)
 
-使用位置索引或者值本身均可实现插入	
-		 
+使用位置索引或者值本身均可实现插入
+
 	mysql> insert into tmp_table_enum(id,name) values(1,1);
 	Query OK, 1 row affected (0.19 sec)
-	
+
 	mysql> select * from tmp_table_enum;
 	+------+------+
 	| id   | name |
@@ -342,10 +344,10 @@ char(10) 中的 10代表什么? 10个字节还是10个字符？
 	|    1 | M    |
 	+------+------+
 	1 row in set (0.00 sec)
-	
+
 	mysql> insert into tmp_table_enum(id,name) values(1,2);
 	Query OK, 1 row affected (0.09 sec)
-	
+
 	mysql> select * from tmp_table_enum;
 	+------+------+
 	| id   | name |
@@ -354,8 +356,8 @@ char(10) 中的 10代表什么? 10个字节还是10个字符？
 	|    1 | F    |
 	+------+------+
 	2 rows in set (0.00 sec)
-	
-	
+
+
 	mysql> select * from tmp_table_enum where name='F';
 	+------+------+
 	| id   | name |
@@ -373,11 +375,11 @@ char(10) 中的 10代表什么? 10个字节还是10个字符？
 	ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') auto_increment primary key,name char(50),pid int(11))engine=MyISAM charset=utf' at line 1
 	mysql> create table analyse_table(id int(11) auto_increment primary key,name char(50),pid int(11))engine=MyISAM charset=utf8;
 	Query OK, 0 rows affected (0.00 sec)
-	
+
 	mysql> insert into analyse_table(name,pid) values('su',1),('zhao',1),('bao',1),('fu',1),('zhang',1);
 	Query OK, 5 rows affected (0.01 sec)
 	Records: 5  Duplicates: 0  Warnings: 0
-	
+
 	mysql> select * from analyse_table procedure analyse(1);
 	+---------------------------+-----------+-----------+------------+------------+------------------+-------+-------------------------+--------+-----------------------------------------------+
 	| Field_name                | Min_value | Max_value | Min_length | Max_length | Empties_or_zeros | Nulls | Avg_value_or_avg_length | Std    | Optimal_fieldtype                             |
@@ -387,7 +389,7 @@ char(10) 中的 10代表什么? 10个字节还是10个字符？
 	| test_1.analyse_table.pid  | 1         | 1         |          1 |          1 |                0 |     0 | 1.0000                  | 0.0000 | TINYINT(1) UNSIGNED NOT NULL                  |
 	+---------------------------+-----------+-----------+------------+------------+------------------+-------+-------------------------+--------+-----------------------------------------------+
 	3 rows in set, 1 warning (0.00 sec)
-	
+
 怎么样，是不是很实用，不过这个工具在MySQL8.0被移除了
 
 	mysql> ? procedure analyse;
@@ -395,17 +397,17 @@ char(10) 中的 10代表什么? 10个字节还是10个字符？
 	Description:
 	Syntax:
 	ANALYSE([max_elements[,max_memory]])
-	
+
 	*Note*:
-	
+
 	PROCEDURE ANALYSE() is deprecated as of MySQL 5.7.18, and is removed in
 	MySQL 8.0.
-	
+
 	ANALYSE() examines the result from a query and returns an analysis of
 	the results that suggests optimal data types for each column that may
 	help reduce table sizes. To obtain this analysis, append PROCEDURE
 	ANALYSE to the end of a SELECT statement:
-	
+
 	SELECT ... FROM ... WHERE ... PROCEDURE ANALYSE([max_elements,[max_memory]])
 
 
@@ -413,7 +415,7 @@ char(10) 中的 10代表什么? 10个字节还是10个字符？
 
 ### TODO
 
-我有两个疑问 
+我有两个疑问
 
 1. 在我们日常开发过程中 我们一般使用`int`类型来存储时间戳，在检索数据时，对int排序与对datetime排序哪个效率高
 1. 使用datetime存储时间，现实世界时间超过数据库允许存储的最大值应该如何处理

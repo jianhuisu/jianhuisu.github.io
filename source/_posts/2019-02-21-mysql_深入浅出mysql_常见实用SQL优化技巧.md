@@ -1,5 +1,7 @@
 ---
 title : 常见实用SQL优化技巧
+categories : 
+ - mysql 
 tags :
 	- MySQL
 ---
@@ -7,30 +9,30 @@ tags :
 知识点有点散 ————__————
 
 ## Point.1 定期检查表，分析表
-	
+
 	check table table_name
 	repair table table_name
 	optimize table table_name
 	select * from table_name procedure analyse(1)
-	
+
 
 ## Point.2 批量导入数据的优化
-	
+
 未实操，待补充
 
 ## Point.3 插入数据的优化
 
 - 从统一客户端插入大量数据时，使用批量插入替代单条插入
 - 当从一个文件装载一个表时，使用`LOAD DATA INFILE`
-- 从不同客户端进行插入时，使用`INSERT DELAYED` 先入内存队列，而后同步到磁盘、`LOW_PRIORITY`则相反，等待其它用户对表读完以后进行插入（默认`insert`操作的优先级是高于`select`的优先级） 
+- 从不同客户端进行插入时，使用`INSERT DELAYED` 先入内存队列，而后同步到磁盘、`LOW_PRIORITY`则相反，等待其它用户对表读完以后进行插入（默认`insert`操作的优先级是高于`select`的优先级）
 - 将索引文件与数据文件分开存储（MyISAM存储引擎表），建表时指定存储目录
- 
+
 
 ## Point.4 优化 GROUP BY
 
 复习GROUP BY的语法
 
-	SELECT [field1,field2,……fieldn] fun_name 
+	SELECT [field1,field2,……fieldn] fun_name
 	FROM tablename
 	[WHERE where_contition]
 	[GROUP BY field1,field2,……fieldn
@@ -57,7 +59,7 @@ tags :
 	1 row in set (0.00 sec)
 
 去掉`group by`带来的`filesort`，`filesort`非常耗时。
-	
+
 	mysql> explain select * from table_group group by name order by null;
 	+----+-------------+-------------+------+---------------+------+---------+------+------+-----------------+
 	| id | select_type | table       | type | possible_keys | key  | key_len | ref  | rows | Extra           |
@@ -65,11 +67,11 @@ tags :
 	|  1 | SIMPLE      | table_group | ALL  | NULL          | NULL | NULL    | NULL |    3 | Using temporary |
 	+----+-------------+-------------+------+---------------+------+---------+------+------+-----------------+
 	1 row in set (0.00 sec)
-	
-	
+
+
 
 ## Point.5 优化 ORDER BY
-	
+
 order by子句使用索引先决条件
 
 if（（order by 字段同为升序或者降序 ） &&  （where条件与order by使用相同的索引） && （order by的顺序与索引顺序相同））{
@@ -84,12 +86,12 @@ order by 的字段混合 ASC 和 DESC
 
 	SELECT * FROM t1 ORDER BY key_part1 DESC, key_part2 ASC；
 
-用于查询行的关键字与 ORDER BY 中所使用的不相同	
+用于查询行的关键字与 ORDER BY 中所使用的不相同
 
 	SELECT * FROM t1 WHERE key2=constant ORDER BY key1；
 
 对不同的关键字使用 ORDER BY（**这个没搞明白怎么回事**）
-	
+
 	SELECT * FROM t1 ORDER BY key1, key2；
 
 
@@ -99,7 +101,7 @@ order by 的字段混合 ASC 和 DESC
 
 	mysql> create table table_or(id int(11) primary key auto_increment,name char(59));
 	Query OK, 0 rows affected (0.02 sec)
-	
+
 	mysql> insert into table_or(name) values('sujianhu9i'),('asdfa'),('zhaojianwei');
 	Query OK, 3 rows affected (0.01 sec)
 	Records: 3  Duplicates: 0  Warnings: 0
@@ -164,11 +166,11 @@ id有索引，name没有索引 select查询没有使用索引
 > b.假设nexted-loop join中驱动表过滤后的行数为K，那么while(outer_row)一定会循环K次，这时驱动表上索引的功能是比聚簇索引占有更小的空间，一个节点上的数据量会更大些，减少随机I/O。
 > c.如果被驱动表过滤后的行数为W，那么在while(outer_row)中两表连接条件上被驱动表还有机会利用索引来大大减少内循环的次数。
 > 所以过滤结果中的小表做驱动表。。优化的目标是尽可能减少JOIN中Nested Loop的循环次数
- 
+
 
 
 ## Point.8 使用SQL提示 HINT
-	
+
 MySQL在生成执行计划时，会根据自己的预估生成最优的执行计划，但是我们也可以人为干预执行计划的生成，性质有点类似与现实生活中的走后门，本来MySQL计划使用field_1字段的索引，人为提示MySQl使用field_2上的索引。下面是一些常用的SQL HINT
 
 ### use index
@@ -176,13 +178,13 @@ MySQL在生成执行计划时，会根据自己的预估生成最优的执行计
 希望MySQL参考的索引
 
 	mysql> show create table sel_type_no_index;
-	
+
 	CREATE TABLE `sel_type_no_index` (
 	  `id` int(11) unsigned DEFAULT NULL,
 	  `name` char(50) DEFAULT NULL,
 	  KEY `id` (`id`),
 	  KEY `name` (`name`)
-	) ENGINE=InnoDB DEFAULT CHARSET=utf8 
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8
 
 where条件中进行两次筛选，MySQL实际使用索引为`name`
 
@@ -204,7 +206,7 @@ where条件中进行两次筛选，MySQL实际使用索引为`name`
 	+----+-------------+-------------------+------------+-------+---------------+------+---------+------+------+----------+------------------------------------+
 	1 row in set, 1 warning (0.00 sec)
 
-### forec index 
+### forec index
 
 强制MySQL使用一个特定索引，引用上一个例子
 
@@ -229,7 +231,7 @@ where条件中进行两次筛选，MySQL实际使用索引为`name`
 	1 row in set, 1 warning (0.00 sec)
 
 ignore index
-	
+
 	mysql> explain select * from user ignore index(primary) where id=200;
 	+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+
 	| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
@@ -237,7 +239,7 @@ ignore index
 	|  1 | SIMPLE      | user  | NULL       | ALL  | NULL          | NULL | NULL    | NULL |  224 |     0.45 | Using where |
 	+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+
 	1 row in set, 1 warning (0.00 sec)
-	
+
 ### SQL_BUFFER_RESULT
 
 强制生成mysql结果集，尽快释放锁定的表，适用于结果集传递耗时长的场景
@@ -246,8 +248,8 @@ ignore index
 
 ## Point.9 数据类型隐式转换
 
-	SELECT * FROM `job_details` WHERE `date` = '20190122' ORDER BY `date` DESC LIMIT 1000;	
-	SELECT * FROM `job_details` WHERE `date` = 20190122 ORDER BY `date` DESC LIMIT 1000;	
+	SELECT * FROM `job_details` WHERE `date` = '20190122' ORDER BY `date` DESC LIMIT 1000;
+	SELECT * FROM `job_details` WHERE `date` = 20190122 ORDER BY `date` DESC LIMIT 1000;
 
 ## 补充一个知识点:QUERY SQL 的执行顺序
 
@@ -266,17 +268,17 @@ ignore index
 #### 虚拟表
 逻辑上存在，实际上并不存在，抽象概念帮助理解执行计划
 
-#### 临时表 
+#### 临时表
 当工作在十分大的表上运行时，在实际操作中你可能会需要运行很多的相关查询，来获的一个大量数据的小的子集。较好的办法，不是对整个表运行这些查询，而是让MySQL每次找出所需的少数记录，将记录选择到一个临时表，然后对这些表运行查询。
-	
+
 创建临时表
 
 (1)定义字段
 
-	CREATE TEMPORARY TABLE tmp_table (        
-	name VARCHAR(10) NOT NULL,        
+	CREATE TEMPORARY TABLE tmp_table (
+	name VARCHAR(10) NOT NULL,
 	value INTEGER NOT NULL)
-     
+
 (2)直接将查询结果导入临时表
 
 	CREATE TEMPORARY TABLE tmp_table SELECT * FROM table_name
@@ -288,7 +290,7 @@ ignore index
 
 	drop table tmp_table
 
-[参考博文](https://yypiao.iteye.com/blog/2359859 "内存表虚拟表临时表") 
+[参考博文](https://yypiao.iteye.com/blog/2359859 "内存表虚拟表临时表")
 #### 视图
 预编译的SQL语句，并不保存实际数据
 

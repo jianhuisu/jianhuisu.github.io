@@ -1,6 +1,8 @@
 ---
 title : shell变量的重要作用
-tags : 
+categories : 
+ - Linux 
+tags :
 	- Linux
 ---
 
@@ -31,8 +33,8 @@ PSI
 	/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/php/bin:/root/bin
 
 或者(推荐)
-	
-	[root@vagrant-centos65 ~]# echo ${PATH}  
+
+	[root@vagrant-centos65 ~]# echo ${PATH}
 	/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/php/bin:/root/bin
 
 ### 声明
@@ -42,7 +44,7 @@ PSI
 	[root@vagrant-centos65 ~]# my_define_variable=xxoo
 	[root@vagrant-centos65 ~]# echo $my_define_variable
 	xxoo
-	
+
 一般情况下 全大写变量为系统默认变量
 
 #### 变量名不能以数字开头
@@ -56,7 +58,7 @@ PSI
 	-bash: my_define: command not found
 
 #### 当变量内容包含空格时，需要使用单引号或者双引号将值包裹起来，赋值时，单引号不能解析值中的shell变量，双引号可以解析
-	
+
 	[root@vagrant-centos65 ~]# echo my_name1
 	my_name1
 	[root@vagrant-centos65 ~]# my_name2='$my_name1'
@@ -70,7 +72,7 @@ PSI
 
 #### 使用反引号`cmd`或者$(cmd)将命令的输出赋值到变量
 
- 
+
 	[root@vagrant-centos65 ~]# my_name4=`pwd`
 	[root@vagrant-centos65 ~]# echo $my_name4
 	/root
@@ -96,21 +98,21 @@ Tips:默认情况下,shell变量的值类型全部为字符串类型，将两个
 
 对已经赋值完成的变量进行类型声明无效
 
-	[root@vagrant-centos65 ~]# declare -i num3   
+	[root@vagrant-centos65 ~]# declare -i num3
 	[root@vagrant-centos65 ~]# echo $num3
 	1+2
 
 在赋值时声明
-  
+
 	[root@vagrant-centos65 ~]# declare -i num3="$num1+num2"
 	[root@vagrant-centos65 ~]# echo $num3
 	3
 
-#### 数组变量的声明 
+#### 数组变量的声明
 
 	[root@vagrant-centos65 ~]# var[1]=1111
 	[root@vagrant-centos65 ~]# echo $var
-	
+
 	[root@vagrant-centos65 ~]# echo $var[1]
 	[1]
 	[root@vagrant-centos65 ~]# echo ${var[1]}
@@ -135,8 +137,8 @@ Tips:默认情况下,shell变量的值类型全部为字符串类型，将两个
 	/root:dfdfdfdfdfdfdfdf
 	[root@vagrant-centos65 ~]# unset my_name5
 	[root@vagrant-centos65 ~]# echo $my_name5
-	
-	[root@vagrant-centos65 ~]# 
+
+	[root@vagrant-centos65 ~]#
 
 
 ### 作用域
@@ -148,7 +150,7 @@ Tips:默认情况下,shell变量的值类型全部为字符串类型，将两个
 
 在当前bash下下达的任何指令，都会以该bash进程的子程序身份去执行。
 
-对已存在的自定义变量使用 export 升级为环境变量	
+对已存在的自定义变量使用 export 升级为环境变量
 
 	[root@vagrant-centos65 ~]# export my_name3
 	[root@vagrant-centos65 ~]# env | grep my_name3
@@ -206,7 +208,7 @@ Tips:为什么环境变量可以被子程序引用呢
 	[root@iZ2zeh70iv04ct6uk02dscZ machine_su]# lsord ||  echo "last command perfoms success"
 	bash: lsord: command not found
 	last command perfoms success
-	
+
 	[root@iZ2zeh70iv04ct6uk02dscZ machine_su]# ls ||  echo "last command perfoms success"
 	foo1  foo1big5  foo2  foo3  index.html  index.php
 
@@ -228,14 +230,14 @@ Tips:为什么环境变量可以被子程序引用呢
 	[root@vagrant-centos65 bp]# echo ${myname-sujianhui}
 	sujianhui
 	[root@vagrant-centos65 bp]# echo $myname
-	
+
 	[root@vagrant-centos65 bp]# myname=""
 	[root@vagrant-centos65 bp]# echo ${myname-sujianhui}
-	
-	[root@vagrant-centos65 bp]# 
+
+	[root@vagrant-centos65 bp]#
 
 等价于
-	
+
 	<?php
 		$c = $myname ?? 'sujianhui'; // => $c = isset($myname) ? $myname : 'sujianhui';
 		echo $c;
@@ -245,7 +247,7 @@ Tips:为什么环境变量可以被子程序引用呢
 	[root@vagrant-centos65 bp]# myname=""
 	[root@vagrant-centos65 bp]# echo ${myname:-sujianhui}
 	sujianhui
-	[root@vagrant-centos65 bp]# 
+	[root@vagrant-centos65 bp]#
 
 等价于
 

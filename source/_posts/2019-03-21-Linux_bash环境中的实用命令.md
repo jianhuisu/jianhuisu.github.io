@@ -1,6 +1,8 @@
 ---
 title : bash中的一些实用命令
-tags : 
+categories : 
+ - Linux 
+tags :
 	- Linux
 ---
 
@@ -28,10 +30,10 @@ tags :
 	[root@vagrant-centos65 bp]# type lsord
 	-bash: type: lsord: not found
 
-设置	
+设置
 
 	[root@vagrant-centos65 bp]# alias lsord='ls -lhS'
-	[root@vagrant-centos65 bp]# lsord 
+	[root@vagrant-centos65 bp]# lsord
 	total 82K
 	-rw-rw-r-- 1 www www  61K Jan  6 21:22 composer.lock
 	drwxrwxr-x 1 www www 4.0K Dec 20 14:02 common
@@ -44,7 +46,7 @@ tags :
 	-bash: lsord: command not found
 
 ### history 查询执行命令的历史记录
-	
+
 好用而且简单, man history 一下
 
 ### wildcard 通配符
@@ -76,7 +78,7 @@ tags :
 
 用户具有的权限与用户的环境变量息息相关，根据用户的登录状态，shell 分为 login shell 与 nologin shell
 
-获取到 login shell 后，环境变量的渲染顺序为 
+获取到 login shell 后，环境变量的渲染顺序为
 
 1. /etc/profile
 1. 按顺序查找，只要存在一个即停止 [~ /.bash_profile|~/.bash_login|~/.profile]

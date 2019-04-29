@@ -1,6 +1,8 @@
 ---
 title : mysql主从复制搭建
-tags : 
+categories : 
+ - mysql 
+tags :
 	- Mysql
 ---
 
@@ -25,8 +27,8 @@ tags :
 	IP:172.16.124.71
 	OS:centos7.4
 	mysql:8.0.15
-	
-	
+
+
 ### Step.1 master开启binlog
 
 vim /etc/my.cnf
@@ -40,12 +42,12 @@ vim /etc/my.cnf
 	log-bin=mysql-bin
 	binlog-do-db=study
 	binlog-ignore-db=mysql
-	
+
 保存退出,重启服务
-	
+
 ### Step.2 设置slave mysql 使用账号
 
-	
+
 	mysql> create user 'slave_account1'@'%' identified by 'yigefuzaqiehenchangdemima_A12b3C4d';
 	Query OK, 0 rows affected (0.10 sec)
 
@@ -55,7 +57,7 @@ vim /etc/my.cnf
 	mysql> flush privileges;
 	Query OK, 0 rows affected (0.01 sec)
 
-	
+
 不同版本的mysql设置命令不同,但大体思路不变。
 获取`File`、`Position`参数供slave配置时使用。
 
@@ -65,9 +67,9 @@ vim /etc/my.cnf
 	+------------------+----------+--------------+------------------+-------------------+
 	| mysql-bin.000005 |     1187 | study        | mysql            |                   |
 	+------------------+----------+--------------+------------------+-------------------+
-	1 row in set (0.00 sec)	
-	
-	
+	1 row in set (0.00 sec)
+
+
 ### Step.3 从库配置
 
 vim /etc/my.cnf
@@ -80,7 +82,7 @@ vim /etc/my.cnf
 	server-id=2
 	...
 
-保存退出,重启服务。	
+保存退出,重启服务。
 
 登入mysql控制台,向master注册slave_host
 
@@ -105,8 +107,8 @@ MASTER_LOG_FILE、MASTER_LOG_POS 这两个参数的值需要在master控制台�
 从库接收数据
 
 	mysql -uroot -padmin study<study.sql
-	
-	
+
+
 ### Step.5 从库启动同步线程
 
 	mysql> start slave;
@@ -133,7 +135,7 @@ MASTER_LOG_FILE、MASTER_LOG_POS 这两个参数的值需要在master控制台�
 Slave_IO_Running：连接到主库，并读取主库的日志到本地，生成本地日志文件
 Slave_SQL_Running:读取本地日志文件，并执行日志里的SQL命令。
 
-				
+
 ## 主从同步监测
 
 搭建成功后,需要对数据的同步状态进行监测,谁知道投入使用后会出现什么问题
@@ -151,9 +153,9 @@ Slave_SQL_Running:读取本地日志文件，并执行日志里的SQL命令。
 	   Time: 511
 	  State: Master has sent all binlog to slave; waiting for more updates
 	   Info: NULL
-	
+
 	mysql> show master status\G
-	
+
 ### 监测从库同步线程是否健康
 
 	mysql> show full processlist\G
@@ -161,18 +163,18 @@ Slave_SQL_Running:读取本地日志文件，并执行日志里的SQL命令。
 	*************************** 4. row ***************************
 		 Id: 21
 	   User: system user
-	   Host: 
+	   Host:
 		 db: NULL
 	Command: Query
 	   Time: 661
 	  State: Slave has read all relay log; waiting for more updates
 	   Info: NULL
-	4 rows in set (0.00 sec)	
-	
+	4 rows in set (0.00 sec)
+
 	mysql> show slave status\G
-	
+
 ### 查看在master注册的slave
-	
+
 	mysql> show slave hosts;
 	+-----------+------+------+-----------+--------------------------------------+
 	| Server_id | Host | Port | Master_id | Slave_UUID                           |
@@ -183,18 +185,18 @@ Slave_SQL_Running:读取本地日志文件，并执行日志里的SQL命令。
 
 ## 常见错误解决
 
-### "Slave_SQL_Running:No" 
-	
+### "Slave_SQL_Running:No"
+
 重置同步的偏移量:
 
 	1. 从库  stop slave 手动同步数据
-	2. 主库  mysql> show master status;  
+	2. 主库  mysql> show master status;
 	3. 从库  获取 主库的偏移量,从库重置
 		CHANGE MASTER TO MASTER_HOST='172.16.124.67',MASTER_USER='slave_account',MASTER_PASSWORD='aaaaaa',MASTER_LOG_FILE='mysql-bin.000004',MASTER_LOG_POS=951;
-	4. start slave	
+	4. start slave
 
 ### Slave_IO_Running:NO
-	
+
 	从库的Slave未启动
 
 ## 小结
@@ -202,7 +204,7 @@ Slave_SQL_Running:读取本地日志文件，并执行日志里的SQL命令。
 slave服务器停机一段时间,当slave再次开机时,这段时间内的差异数据会在开机后进行同步。为了保险起见,在重启slave之后,要检查一下slave线程是否执行正常。
 master数据库服务器停机后,slave处于等待同步状态,但是不影响查询,
 
-	
+
 ## 参考资料
 
 搭建 https://www.cnblogs.com/zhoujie/p/mysql1.html

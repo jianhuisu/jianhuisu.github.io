@@ -1,13 +1,15 @@
 ---
 title : SQL分析工具EXPLAIN详解
-tags : 
+categories : 
+ - mysql 
+tags :
 	- MySQL
 ---
 
 ## 概览
 
 使用 explain + QUERY_SQL
-	
+
 
 	mysql> explain select * from region left join business on region.business_id=business.business_id;
 	+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+----------------------------------------------------+
@@ -17,40 +19,40 @@ tags :
 	|  1 | SIMPLE      | business | NULL       | ALL  | PRIMARY       | NULL | NULL    | NULL |    2 |   100.00 | Using where; Using join buffer (Block Nested Loop) |
 	+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+----------------------------------------------------+
 	2 rows in set, 1 warning (0.01 sec)
-	
+
 参数说明
-	
+
 	select_type:	   SELECT的类型
-							可能值： 
+							可能值：
 							 	SIMPLE  简单表
-							    PRIMARY  
+							    PRIMARY
 								UNION
 								SUBQUERY
 
 	table:             输出结果集的表
-	partitions:        
+	partitions:
 	type:              表的连接类型
 							可能值：
 								// 从上到下 效率由高到低
-								system 
+								system
 								const
-								eq_ref  
-								ref  
-								fulltext  
-								ref_or_null  
-								index_merge 
-								unique_subquery  
-								index_subquery  
-								range  
-								index 
+								eq_ref
+								ref
+								fulltext
+								ref_or_null
+								index_merge
+								unique_subquery
+								index_subquery
+								range
+								index
 								ALL
-	 
+
 	possible_keys:     可能会使用到的索引
 	key:               实际使用到的索引
 	key_len:           索引字段的长度
-	ref:               
+	ref:
 	rows:              扫描的行数
-	filtered:          
+	filtered:
 	extra:             执行情况的说明与描述
 
 
@@ -71,18 +73,18 @@ tags :
 ### Params.2 type
 
 创建表 sel_type_child
- 
+
 	CREATE TABLE IF NOT EXISTS `sel_type_child` (
 	  `id` int(10) NOT NULL AUTO_INCREMENT,
 	  `name` char(50) DEFAULT NULL,
 	  `pid` int(11) DEFAULT NULL,
 	  PRIMARY KEY (`id`)
 	) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-	
+
 
 	INSERT INTO `sel_type_child` (`id`, `name`, `pid`) VALUES(1, '张学良', 1),(2, '李世民', 2),(3, '雍正', 3);
-	
-	
+
+
 创建表 sel_type_parent
 
 	CREATE TABLE IF NOT EXISTS `sel_type_parent` (
@@ -90,7 +92,7 @@ tags :
 	  `name` char(50) DEFAULT NULL,
 	  PRIMARY KEY (`id`)
 	) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-	
+
 	INSERT INTO `sel_type_parent` (`id`, `name`) VALUES(1, '张作霖'),(2, '李渊'),(3, '康熙'),(4, '曾国藩');
 
 #### system
@@ -106,14 +108,14 @@ tags :
 
 	mysql> create table sel_type_index(id int(10),name char(50))engine=MyISAM charset=utf8;
 	Query OK, 0 rows affected, 1 warning (0.13 sec)
-	
+
 	mysql> create index on sel_type_index(id);
 	Query OK, 0 rows affected (0.15 sec)
 	Records: 0  Duplicates: 0  Warnings: 0
-	
+
 	mysql> insert into sel_type_index(id,name) values(1,'name_1');
 	Query OK, 1 row affected (0.01 sec)
-	
+
 	mysql> explain select * from sel_type_index where id=1;
 	+----+-------------+----------------+------------+--------+---------------+------+---------+------+------+----------+-------+
 	| id | select_type | table          | partitions | type   | possible_keys | key  | key_len | ref  | rows | filtered | Extra |
@@ -138,19 +140,19 @@ tags :
 #### ref
 
 使用普通索引
-`=` 运算符 
+`=` 运算符
 
 	mysql> create table sel_type_index(id int(10),name char(50))engine=MyISAM charset=utf8;
 	Query OK, 0 rows affected, 1 warning (0.13 sec)
-	
+
 	mysql> create index on sel_type_index(id);
 	Query OK, 0 rows affected (0.15 sec)
 	Records: 0  Duplicates: 0  Warnings: 0
-	
+
 	mysql> insert into sel_type_index(id,name) values(2,'name_2'),(3,'name_3'),(4,'name_4');
 	Query OK, 3 rows affected (0.00 sec)
 	Records: 3  Duplicates: 0  Warnings: 0
-	
+
 	mysql> explain select * from sel_type_index where id=1;
 	+----+-------------+----------------+------------+------+---------------+------+---------+-------+------+----------+-------+
 	| id | select_type | table          | partitions | type | possible_keys | key  | key_len | ref   | rows | filtered | Extra |
@@ -186,10 +188,10 @@ tags :
 
 	mysql> create table sel_type_no_index(id int(11),name char(50));
 	Query OK, 0 rows affected (0.14 sec)
-	
+
 	mysql> insert into sel_type_no_index(id,name) values(1,'name_1');
 	Query OK, 1 row affected (0.07 sec)
-	
+
 	mysql> select * from sel_type_no_index where id=1;
 	+------+--------+
 	| id   | name   |
@@ -197,7 +199,7 @@ tags :
 	|    1 | name_1 |
 	+------+--------+
 	1 row in set (0.00 sec)
-	
+
 	mysql> explain select * from sel_type_no_index where id=1;
 	+----+-------------+-------------------+------------+------+---------------+------+---------+------+------+----------+-------------+
 	| id | select_type | table             | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
@@ -211,8 +213,8 @@ tags :
 
 	 等于操作 > 比较操作
 	 唯一索引 > 普通索引 > 没有使用索引(这并不意味着索引越多越好)
-	 
-### Params.3 key 
+
+### Params.3 key
 
 
 ### Params.4 key_len
@@ -222,9 +224,9 @@ tags :
 ### Params.5 rows
 
 扫描的行数，越少越好
- 
+
 ## 总结
-	
+
 索引的本质为数据结构
 
 ## 参考资料

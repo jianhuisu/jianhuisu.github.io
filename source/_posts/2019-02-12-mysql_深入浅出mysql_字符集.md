@@ -1,5 +1,7 @@
 ---
 title : MySQL的字符集
+categories : 
+ - mysql 
 tags :
 	- MySQL
 ---
@@ -26,7 +28,7 @@ UTF-16  变长
 
 MySQL的字符集包括 字符集与校对规则两个概念
 字符集：决定数据存储的方式   CHARACTER
-校对规则:决定字符串比较的方式      COLLATION 
+校对规则:决定字符串比较的方式      COLLATION
 
 查看MySQL支持的字符集
 
@@ -38,10 +40,10 @@ MySQL的字符集包括 字符集与校对规则两个概念
 	| character_set_server | utf8  |
 	+----------------------+-------+
 	1 row in set (0.00 sec)
-	
+
 	mysql> show variables like 'collcation_server';
 	Empty set (0.00 sec)
-	
+
 	mysql> show variables like 'character_set_client';
 	+----------------------+-------+
 	| Variable_name        | Value |
@@ -49,10 +51,10 @@ MySQL的字符集包括 字符集与校对规则两个概念
 	| character_set_client | utf8  |
 	+----------------------+-------+
 	1 row in set (0.00 sec)
-	
+
 	mysql> show variables like 'collcation_client';
 	Empty set (0.00 sec)
-	
+
 	mysql> show variables like 'character_set_database';
 	+------------------------+-------+
 	| Variable_name          | Value |
@@ -60,13 +62,13 @@ MySQL的字符集包括 字符集与校对规则两个概念
 	| character_set_database | utf8  |
 	+------------------------+-------+
 	1 row in set (0.01 sec)
-	 
+
 
 
 MySQL的字符集、校对规则设置分为四个级别
 
 ### 服务器的字符集设置
-	
+
 	my.cnf
 
 	[mysqld]
@@ -74,7 +76,7 @@ MySQL的字符集、校对规则设置分为四个级别
 	  character-set-server=utf8
 
 	启动mysql进程时设置
-	
+
 	mysqld --default-character-set=gbk
 	编译时设置
 	./configure --with-charset=gbk
@@ -90,7 +92,7 @@ MySQL的字符集、校对规则设置分为四个级别
 	show variables like 'collation_server';
 
 ### 数据库的字符集设置
-	
+
 - 如果指定了字符集与校对规则，那么使用指定的字符集与校对规则
 - 	如果只指定了字符集，没有指定校对规则，那么使用指定字符集与指定字符集默认的校对规则
 - 	如果没有指定字符集与校对规则，那么使用服务器的字符集与校对规则
@@ -103,9 +105,9 @@ MySQL的字符集、校对规则设置分为四个级别
 
 	show variables like 'collation_database';
 
-	
+
 ### 数据表的字符集设置
- 
+
 - 	如果指定了字符集与校对规则，那么使用指定的字符集与校对规则
 - 	如果只指定了字符集，没有指定校对规则，那么使用指定字符集与指定字符集默认的校对规则
 - 	如果没有指定字符集与校对规则，那么使用数据库的字符集与校对规则
@@ -130,14 +132,14 @@ MySQL的字符集、校对规则设置分为四个级别
 	     Check_time: NULL
 	      Collation: gbk_chinese_ci   // 这里校对规则的前缀就是该表的字符集
 	       Checksum: NULL
-	 Create_options: 
-	        Comment: 
+	 Create_options:
+	        Comment:
 	1 row in set (0.00 sec)
 
 
 
 ### 字段的字符集设置
-	
+
 	一般很少遇到，这里不做记录
 
 备注：建库建表时显示指定字符集与校对规则
@@ -164,7 +166,7 @@ MySQL的字符集、校对规则设置分为四个级别
 	| character_set_client | utf8  |
 	+----------------------+-------+
 	1 row in set (0.05 sec)
-	
+
 	mysql> show variables like 'character_set_connection';
 	+--------------------------+-------+
 	| Variable_name            | Value |
@@ -172,7 +174,7 @@ MySQL的字符集、校对规则设置分为四个级别
 	| character_set_connection | utf8  |
 	+--------------------------+-------+
 	1 row in set (0.00 sec)
-	
+
 	mysql> show variables like 'character_set_result';
 	Empty set (0.01 sec)
 

@@ -1,5 +1,7 @@
 ---
 title : "CGI、Fast-cgi、php-fpm、php-cgi区别"
+categories : 
+ - php 
 tag :
 	- PHP
 ---
@@ -22,9 +24,9 @@ CGI（Common Gateway Interface）为上述协议的初始版本，协议规定�
 Fast-CGI (Fast Common Gateway Interface) 是CGI协议的改良版本。在CGI协议的实现中，对于每一个请求,PHP都必须重新解析php.ini、重新载入全部扩展并重初始化全部数据结构。在Fast-CGI协议的实现中，PHP采用了Master-Worker的工作模型，通过Master进程对Worker进程进行分配调度。这套工作模型实现就是我们常提的：PHP-FPM(FastCGI Process Manager：FastCGI进程管理器，5.3 之后集成在php包中)
 
 	[root@vagrant-centos65 sll]# ps -ef | grep php
-	root      1092     1  0 09:45 ?        00:00:01 php-fpm: master process (/usr/local/php/etc/php-fpm.conf)                                                                    
-	www       1093  1092  0 09:45 ?        00:00:00 php-fpm: pool www                                                                                                            
-	www       1094  1092  0 09:45 ?        00:00:00 php-fpm: pool www                                                                                                            
+	root      1092     1  0 09:45 ?        00:00:01 php-fpm: master process (/usr/local/php/etc/php-fpm.conf)
+	www       1093  1092  0 09:45 ?        00:00:00 php-fpm: pool www
+	www       1094  1092  0 09:45 ?        00:00:00 php-fpm: pool www
 	root      3859  3498  0 17:15 pts/1    00:00:00 grep php
 
 此时，该协议的执行过程为
@@ -37,5 +39,5 @@ Fast-CGI (Fast Common Gateway Interface) 是CGI协议的改良版本。在CGI协
 ## 小结
 
 CGI是webserver与语言应用进行通讯的协议，Fast-CGI是CGI的改良版本，PHP-FPM是PHP对Fast-CGI的实现。
-	
+
 

@@ -1,6 +1,8 @@
 ---
 title : 什么是bash
-tags : 
+categories : 
+ - Linux 
+tags :
 	- Linux
 ---
 
@@ -12,7 +14,7 @@ tags :
 
 bash是shell的一种，如何查看当前 linux distribution 支持哪些shell呢
 
-	[root@iZ2zeh70iv04ct6uk02dscZ www]# cat /etc/shells 
+	[root@iZ2zeh70iv04ct6uk02dscZ www]# cat /etc/shells
 	/bin/sh
 	/bin/bash
 	/sbin/nologin
@@ -28,8 +30,8 @@ bash是shell的一种，如何查看当前 linux distribution 支持哪些shell�
 	php is /usr/local/php/bin/php  // 用户自定义
 	[root@iZ2zeh70iv04ct6uk02dscZ www]# type source
 	source is a shell builtin  // bash 内置命令
- 
-	
+
+
 
 ## 我用的是哪个shell
 
@@ -56,7 +58,7 @@ bash是shell的一种，如何查看当前 linux distribution 支持哪些shell�
 求一求root哥，给改一下passwd
 
 	[root@iZ2zeh70iv04ct6uk02dscZ www]# vim /etc/passwd
-	
+
 	machine_su:x:1002:1002::/home/machine_su:/bin/sh
 	:wq
 

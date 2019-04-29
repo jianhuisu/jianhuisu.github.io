@@ -1,6 +1,8 @@
 ---
 title : 指针、数组、结构易错点整理
-tags : 
+categories : 
+ - C 
+tags :
 	- C
 ---
 
@@ -17,13 +19,13 @@ tags :
 	    int * p1;
 	    int* p2;
 	    int *p3;
-	
+
 	    int a = 1;
-	
+
 	    p1 = &a;
 	    p2 = &a;
 	    p3 = &a;
-	
+
 	    printf("pointer p1 values %p\n",p1);
 	    printf("pointer p2 values %p\n",p2);
 	    printf("pointer p3 values %p\n",p3);
@@ -52,9 +54,9 @@ Tips:为什么指针变量有要有类型 ?
 	int a = 1;
 	int *p3;
 	p3 = &a;
-	
+
 则`*p3`的返回值为 1。
-	
+
 Tips:千万不可以解引用未初始化的指针
 
     int *p;
@@ -64,7 +66,7 @@ Tips:千万不可以解引用未初始化的指针
 
 - 擦写数据
 - 程序崩溃
- 
+
 
 ### Usage.3 乘法
 
@@ -119,52 +121,52 @@ Tips:千万不可以解引用未初始化的指针
 
 ### structure 结构的声明
 
-typedef 并没有创建新的类型 只不过是为现有类型创建了简写 
+typedef 并没有创建新的类型 只不过是为现有类型创建了简写
 
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <string.h>
-	
+
 	struct user{
 	    int id;
 	    char name[40];
 	};
-	
+
 	typedef struct user_alias{
 	    int id;
 	    char name[40];
 	}USERALIAS;
-	
+
 	typedef char BYTE;
-	
+
 	void main(void)
 	{
 	    struct user employee;
 	    USERALIAS employee1;
 	    BYTE name[10] = "my name";
-	
+
 	    employee.id   = 10010;
 	    strcpy(employee.name,"sjh");
 	    printf("today entry employee id is %d and name is %s \n",employee.id,employee.name);
-	
+
 	    scanf("%s %d",&employee1.name,&employee1.id);
 	    printf("today entry employee1 id is %d and name is %s \n",employee1.id,employee1.name);
-	
+
 	    printf("typedef  %s \n",name);
 	}
 
 执行结果
 
-	[root@vagrant-centos65 structure]$>t struct_user.c 
-	today entry employee id is 10010 and name is sjh 
+	[root@vagrant-centos65 structure]$>t struct_user.c
+	today entry employee id is 10010 and name is sjh
 	dfdfdf 444  // 此处为输入值
-	today entry employee1 id is 444 and name is dfdfdf 
-	typedef  my name 
+	today entry employee1 id is 444 and name is dfdfdf
+	typedef  my name
 
 ### 指向结构变量的指针
 
 him 是一个指向结构的指针,him->face 代表该指针所指向结构的一个成员。如果`library`是一个结构变量,那么需要使用`&library`获取结构变量地址
-	
+
 	struct book library;
 	struct book * him;
 	him = &library
@@ -199,4 +201,4 @@ him 是一个指向结构的指针,him->face 代表该指针所指向结构的�
 	...
 
 	free(p);
-	p = NULL;/*请加上这句*/    
+	p = NULL;/*请加上这句*/

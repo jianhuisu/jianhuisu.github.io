@@ -1,5 +1,7 @@
 ---
 title : SQL基础
+categories : 
+ - mysql 
 tags :
 	- MySQL
 ---
@@ -67,7 +69,7 @@ tags :
 REPLACE INTO
 
 	replace into xxoo1(`name`,`sex`) values('machine',2)
- 
+
 replace into 语句实质为 删除原数据，插入新数据 两个操作结合,通过对比下面`column_2`值为0的数据项可验证
 
 	mysql> select * from replace_table;
@@ -79,10 +81,10 @@ replace into 语句实质为 删除原数据，插入新数据 两个操作结�
 	|  4 |      222 | machine4 |
 	+----+----------+----------+
 	3 rows in set (0.00 sec)
-	
+
 	mysql> replace into replace_table(name) values('machine4');
 	Query OK, 2 rows affected (0.03 sec)
-	
+
 	mysql> select * from replace_table;
 	+----+----------+----------+
 	| id | column_2 | name     |
@@ -99,7 +101,7 @@ replace into 语句实质为 删除原数据，插入新数据 两个操作结�
 
 清空表中数据 ，重新归零主键
 
-	truncate table 表名  
+	truncate table 表名
 
 例如
 
@@ -125,10 +127,10 @@ replace into 语句实质为 删除原数据，插入新数据 两个操作结�
 	|  7 |     3333 | machine3 |
 	+----+----------+----------+
 	2 rows in set (0.00 sec)
-	
+
 	mysql> truncate table ttttt;
 	Query OK, 0 rows affected (0.14 sec)
-	
+
 	mysql> select * from ttttt;
 	Empty set (0.00 sec)
 
@@ -137,16 +139,16 @@ replace into 语句实质为 删除原数据，插入新数据 两个操作结�
 	update `table_name` set 列名=列值  条件
 
 **查询**
- 
+
 	select `id`,`colunm_2` from `replace_table` 条件
 
 聚合函数
 
 	select * from compile_foo where date=201811 group by businessUnit
-	
+
 
 > 非严格模式下:使用聚合函数对结果集进行分类时，后面的子字段保留第一次匹配的结果.严格模式下sql_mode=only_full_group_by。对于GROUP BY聚合操作，如果在SELECT中的列，没有在GROUP BY中出现，那么这个SQL是不合法的，因为列不在GROUP BY从句中，所以对于设置了这个mode的数据库，在使用group by 的时候，就要用MAX(),SUM(),ANT_VALUE()这种聚合函数，才能完成GROUP BY 的聚合操作。
-> 
+>
 
 连接查询分为内连接与外链接
 
@@ -160,7 +162,7 @@ replace into 语句实质为 删除原数据，插入新数据 两个操作结�
 	右查询  rignt join on
 	       inner join
 
-结果集联合  union （去重 distinct）| union all  
+结果集联合  union （去重 distinct）| union all
 
 	select type_id from qa_content_new union all select id from qa_type
 	select type_id from qa_content_new union select id from qa_type
@@ -183,24 +185,24 @@ eg.1
 	   Account Management
 	   ...
 
-eg.2 
-	
+eg.2
+
 	mysql> ? insert
 	Name: 'INSERT'
 	Description:
 	Syntax:
 		...
-	
+
 eg.3
 
 	mysql> ? int
 	Name: 'INT'
 	Description:
 	INT[(M)] [UNSIGNED] [ZEROFILL]
-	
+
 	A normal-size integer. The signed range is -2147483648 to 2147483647.
 	The unsigned range is 0 to 4294967295.
-	
+
 	URL: http://dev.mysql.com/doc/refman/8.0/en/numeric-type-overview.html
 
 ## 其它常用语句
@@ -215,11 +217,11 @@ eg.3
 	+------------+
 
 切换数据库
-	
+
 	use db_name;
 
 查看建表语句
-	
+
 	create table table_name 或 desc table_name
-	
+
 
