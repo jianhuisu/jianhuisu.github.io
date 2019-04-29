@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 言语之美
+title: 凿凿
 subtitle:
 description: 如果突然 你的美丽闯入我的空虚
 keywords: 言语之美,光速机枪,苏苏卡其,苏莲莲,文学爱好者,小说,jianhuisu
@@ -15,7 +15,7 @@ timezone:
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: https://www.sulianlian.com
 root: /
-permalink: :year/:month/:day/:title/
+permalink: :category/:title.html
 permalink_defaults:
 
 # Directory
