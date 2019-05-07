@@ -68,7 +68,14 @@ CONCAT(name1,name2,...)
 	+-------------------+---------------+
 	8 rows in set (0.00 sec)
 
-注意：操作项中含有NULL值，那么返回值也为NULL
+注意：CONCAT的参数操作项中含有NULL值，那么返回值也为NULL
+
+concat_ws() 
+使用指定分隔符连接,这个函数多用在多字段联合组成唯一ID的场景,比如在组织架构的数据表中,子级部门可能会存在重名现象,此时就需要创建唯一ID
+
+	concat_ws('_',business_name,department_1,department_2,department_3,department_4) as unique_id
+	
+注意：concat_ws的参数操作项中含有NULL值时，那么返回值不一定为NULL	
 
 LEFT(str,n)
 RIGHT(str,n)
@@ -155,6 +162,21 @@ UPPER(str)
 STRCMP(str1,str2):比较字符串str1与str2的ANSII码值大小。相等返回0，s1>s2 返回1，s1<s2 返回-1
 LOCATE 返回字符在字段中第一次出现的位置 没有出现则返回0 select LOCATE('第一军团',name) from region
 
+Tips:php中有一个函数`preg_replace()`，该函数的作用是对字符串中符合正则匹配的部分进行替换
+	
+	<?php
+	
+		$name="sujianhui-A9"
+		preg_replace('/-[A-Z0-9]+$/',"",$name);
+
+在数据分析时,难免会遇到数据不规则的情况,但是mysql中又没有与`preg_replace()`一般作用的函数,此时可以几个mysql函数的配合使用,
+达到正则匹配替换的作用
+	
+	name字段的值类似 sujianhui-A9,sujianhui-B9A3格式，想要过滤掉中横线以及其后部分
+	mysql> select replace(name, SUBSTR(name, LOCATE('-', name), length(name)), '') AS name from user
+
+依照这种思路可以组合出很多功能丰富的自定义函数	
+	
 ### 数值函数
 
 - RAND()     返回小于1的随机数
@@ -178,7 +200,7 @@ NOW()     返回当前完整时间
 	+------------+-----------+---------------------+
 	1 row in set (0.05 sec)
 
-UNIX_TIMESTAMP('2018-12-12'):将日期格式字符串转化为时间戳
+UNIX_TIMESTAMP('2018-12-12'): 将日期格式字符串转化为时间戳
 FROM_UNIXTIME(1543981584)   ：将时间戳转化为日期格式字符串
 
 	mysql> select UNIX_TIMESTAMP('2018-12-12'),FROM_UNIXTIME(1543981584);
@@ -215,9 +237,6 @@ DATE_DIFF():计算两个时间点之间相差天数
 	+---------------------+---------------------+
 	1 row in set (0.00 sec)
 
-	mysql>
-	mysql>
-	mysql>
 	mysql> select date_diff('2018-12-29','2019-02-04');
 	ERROR 1305 (42000): FUNCTION qq.date_diff does not exist
 	mysql> select datediff('2018-12-29','2019-02-04');
@@ -267,6 +286,31 @@ IFNULL(ifvalues,value1)
 	+--------------------------------+
 	8 rows in set (0.00 sec)
 
+IF系列流程函数在进行数据分析时使用的频率非常高,比如现在有一个`job_details`,表中对每个销售人员按天维度进行流水记录
+
+	
+	| date       | tuition  | em | 
+	| 2019-04-20 | -3237.00 | xo | 
+	| 2019-04-19 | 225.25   | xo | 
+	| 2019-04-18 | 0.00     | xo | 
+	| 2019-04-17 | 0.00     | xo | 
+	| 2019-04-16 | 5582.81  | xo | 
+	| 2019-04-15 | 9685.21  | xo | 
+	| 2019-04-14 | 0.00     | xo | 
+	| 2019-04-13 | 0.00     | xo | 
+	 ... 
+
+现想按月汇总每个销售的流水,如下	 
+
+	SELECT `em`
+	, ceil(SUM(IF(`date` BETWEEN '2019-04-01' AND '2019-04-31', `tuition`, 0))) AS tuition_month_4
+	, ceil(SUM(IF(`date` BETWEEN '2019-03-01' AND '2019-03-31', `tuition`, 0))) AS tuition_month_3
+	, ceil(SUM(IF(`date` BETWEEN '2019-02-01' AND '2019-02-28', `tuition`, 0))) AS tuition_month_2
+	, ceil(SUM(IF(`date` BETWEEN '2019-01-01' AND '2019-01-31', `tuition`, 0))) AS tuition_month_1
+	FROM `job_details`
+	WHERE `date` BETWEEN '2019-01-01' AND '2019-04-31'
+	GROUP BY `em`	
+	
 case when exp then ... else ... end
 
 	mysql> select case when name is null then 'name is null' when name='' then 'name is empty' else name end from user;
@@ -361,13 +405,27 @@ case ... when exp then ... else ... end，这个函数在进行数据拆分重�
 ### 聚合函数
 
 sum()
+	
+sum()函数不单可以用来求和,有时也可以用来计数
+
+	select ...
+	// 在职人数
+	"sum(if(a.info_write_time <= :end_time and (a.last_working_day>=:start_time or a.last_working_day is null),1,0)) as now_work",
+	// 待离职人数
+	"sum(if(a.last_working_day >= :end_time and a.last_working_day is not null,1,0)) as ready_to_quit",
+	...
+	group by 部门
+	
 count()
+
+	count()通常用来对符合条件的记录进行计数
+	
 avg()
 
 根据分组时**各自检索到**的数据行数进行求平均数
 
 	select avg(work_hour) as avg_work_hour,em from compile_add_on_work_hour group by em
 
-
 ### 小结
+
 	MySQL有很多内置函数，功能实用且性能高效，在空闲之余应该经常看一看MySQL的官方手册
