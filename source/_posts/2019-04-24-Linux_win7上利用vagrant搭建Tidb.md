@@ -25,12 +25,12 @@ tags :
 Tips:
 
 	1 virtualbox软件本身不要安装在C盘,安装完成之后,务必在全局设置中将虚拟机实例默认存储目录切换到C盘外
-	2 将vagrant安装镜像存储位置设置到C盘外
+	2 将vagrant安装镜像存储位置设置到C盘外(通过设置环境变量 VAGRANT_HOME=E:\VirtualSystem 实现)
 
 ## Step.1 创建第一个实例
 
-	D:\www>develop_host>vagrant box add ct7_node1 develop_environment.box
-	D:\www>develop_host>vagrant init
+	D:\www>develop_host>vagrant box add ct7_node1 develop_environment.box --force
+	D:\www>develop_host>vagrant init ct7_node1
 
 init后，当前目录生成一个Vagrantfile，设置网络连接为桥接模式，这样该虚拟机独占一个IP
 
@@ -44,6 +44,10 @@ init后，当前目录生成一个Vagrantfile，设置网络连接为桥接模�
 
 	end
 
+检查配置文件是否正确	
+	
+	D:\www>develop_host>vagrant validate
+	
 配置完成后,启动该实例
 
 	D:\www>develop_host>vagrant up
@@ -115,9 +119,25 @@ init后，当前目录生成一个Vagrantfile，设置网络连接为桥接模�
 
 	...
 
+	
+## 小结
+
+安装的过程中遇到不少坑,比如在安装box ct7_node3 时,启动时一直提示`ssh connection time out`
+我的第一反应这些地方出了问题
+	
+	Vagrantfile配置问题
+		网络模式问题
+		host安装了box,产生端口占用问题
+	host防火墙问题
+	box的ssh服务问题
+		账号密码问题
+
+耐心阅读错误提示,一个一个问题点排除会很有帮助
+	
 ## 参考地址
 
 docker与vagrant 区别：https://www.cnblogs.com/vikings-blog/p/3973265.html
+VBoxAdditions增强功能 https://www.cnblogs.com/yongxo/p/5062122.html
 
 
 
