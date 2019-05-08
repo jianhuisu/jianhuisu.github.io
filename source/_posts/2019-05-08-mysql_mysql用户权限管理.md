@@ -120,7 +120,7 @@ Tips:	mysql8.x修改完权限以后,立即生效,但是为了保险起见,还是
 	Grants for select_user@%: GRANT SELECT ON `zeus`.* TO `select_user`@`%`
 	3 rows in set (0.00 sec)
 
-	将第二行的权限与`SELECT`权限合并,则为`all privileges`所包含的所有权限
+将第二行的权限与`SELECT`权限合并,则为`all privileges`所包含的所有权限
 	
 	INSERT
 	UPDATE
