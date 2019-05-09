@@ -6,7 +6,8 @@ tag :
 	- PHP
 ---
 
-WebServer可以直接返回静态资源，但是对于资源的其它操作，例如计算、压缩等WebServer需要借助其它应用程序，例如我们常用的工具语言：PHP、C、JAVA等等，但是语言层出不穷，要实现WebServer与各种语言中无缝连接，需要双方遵守共同的规范
+WebServer可以直接返回静态资源，但是对于资源的其它操作，例如计算、压缩等WebServer需要借助其它应用程序，
+例如我们常用的工具语言：PHP、C、JAVA等等，但是语言层出不穷，要实现WebServer与各种语言无缝连接，需要双方遵守共同的规范
 
 ## CGI 通用网关接口
 
@@ -35,6 +36,72 @@ Fast-CGI (Fast Common Gateway Interface) 是CGI协议的改良版本。在CGI协
 1. php-fpm初始化，启动多个php-cgi解释器进程并等待来自Web Server的连接
 1. 当客户端请求到达Web Server时，php-fpm进程管理器选择并连接到一个CGI解释器。Web server将CGI环境变量和标准输入发送到FastCGI子进程php-cgi。
 1. FastCGI子进程完成处理后将标准输出和错误信息从同一连接返回Web Server。当FastCGI子进程关闭连接时，请求便告处理完成。FastCGI子进程接着等待并处理来自php-fpm的下一个连接。在CGI模式中，php-cgi在此便退出了。
+
+## Nginx与php-fpm是如何进行通讯的
+
+因为一个web请求是由nginx转发到php-fpm,所以可以称`nginx`是`php-fpm`的上游服务,`php-fpm`是`nginx`的下游服务。两者之间的通讯方式主要有两种
+
+- TCP调用  通过TCP协议进行信息通讯
+- UNIX SOCKET 通过socket文件进行通讯
+
+1 tcp 方式主要配置
+
+nginx 
+
+	server {
+		...
+		
+		location ~ \.php$ {
+            root           html;
+            fastcgi_pass   127.0.0.1:9000; // 将标准输入通过tcp协议转发至下游
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            include        fastcgi_params;
+        }
+
+		...
+	}
+
+php-fpm 
+
+	[root@vagrant-centos65 php-fpm.d]$>egrep -v '(;|^$)' /usr/local/php7/etc/php-fpm.d/www.conf
+	[www]
+	user = www
+	group = www
+	listen = 127.0.0.1:9000 // 通过tcp协议接收上游的标准输入
+	...
+
+unix socket 方式
+
+nginx 
+
+	server {
+		...
+		
+		location ~ \.php$ {
+            root           html;
+            fastcgi_pass   unix:/dev/shm/fpm-cgi.sock; // nginx将标准输入写入到下游的socket文件, 或者从socket读取php-fpm的标准输出
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            include        fastcgi_params;
+        }
+
+		...
+	}
+
+php-fpm 
+
+	[root@vagrant-centos65 php-fpm.d]$>egrep -v '(;|^$)' /usr/local/php7/etc/php-fpm.d/www.conf
+	[www]
+	user = www
+	group = www
+	listen = /dev/shm/fpm-cgi.sock // 从socket文件读取上游的标准输入(nginx写入到socket中的信息) 或者将标准输出写入到socket
+	...
+
+注意:这种模式下nginx进程与php-fpm进程都需要具有对`php-cgi.socket`文件具有读写权限
+		
+理论上讲socket不需要经过路由,会比tcp方式快,但是根据实际使用情况的反馈,socket方式`502`的异常率要高于tcp。
+我没有实操比对过两者的性能、稳定性的具体差异。平时工作多以tcp方式为主,tcp很稳定,而且做负载均衡也很方便。
 
 ## 小结
 
