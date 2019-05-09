@@ -8,15 +8,15 @@ tags :
 
 MySQL的优化主要分为三个方面
 
-1. SQL语句
-1. 应用方面
+1. SQL语句优化
+1. 应用层面
 1. MySQL服务架构
 
-本篇笔记主要从宏观上对SQL调优的步骤进行梳理，便于转化为自己的知识体系，因为篇幅限制，文中涉及到的重要的知识点会后续更新中补充
+本篇笔记主要从整体角度对SQL调优的步骤进行梳理，便于转化为自己的知识体系，因为篇幅限制，文中涉及到的重要的知识点会后续更新中补充
 
 ## Part.1 SQL语句优化
 
-### step.1 对数据服务有基本的了解
+### step.1 对服务概况有基本了解
 
 show global status like "Com_select%"
 
@@ -108,23 +108,14 @@ show [global|session] status like "Handler_read%";
 
 备注：
 
-- show [global|session] status    查询mysql运行时可变变量
-- show [global|session] variables 查询mysql服务预定义变量
+- show [global|session] status    查看mysql运行状态参数
+- show [global|session] variables 查看mysql服务配置
 
-### step.2 定位执行缓慢的SQL
+### step.2 收集慢查询SQL
 
 #### 慢查询日志
 
-开启慢查询日志
-
-	[mysqld]
-	...
-
-	slow_query_log = ON
-    slow_query_log_file = /var/lib/mysql/vagrant-centos6.5-slow.log
-    long_query_time = 2
-
-查看慢查询日志配置
+查看慢查询日志是否开启
 
 	mysql> show variables like "%slow%";
 	+---------------------------+-------------------------------------------+
@@ -133,7 +124,7 @@ show [global|session] status like "Handler_read%";
 	| log_slow_admin_statements | OFF                                       |
 	| log_slow_slave_statements | OFF                                       |
 	| slow_launch_time          | 2                                         |
-	| slow_query_log            | ON                                        |
+	| slow_query_log            | OFF                                        |
 	| slow_query_log_file       | /var/lib/mysql/vagrant-centos6.5-slow.log |
 	+---------------------------+-------------------------------------------+
 	5 rows in set (0.01 sec)
@@ -145,7 +136,51 @@ show [global|session] status like "Handler_read%";
 	| long_query_time | 2.000000 |
 	+-----------------+----------+
 	1 row in set (0.01 sec)
+	
+`slow_query_log` 代表慢查询是否开启 OFF:未开启 ON:开启
 
+开启慢查询日志
+
+慢查询日志的开启有两种方式
+
+- 在线开启
+- 通过配置文件开启
+
+1 在线开启
+
+	mysql> set global slow_query_log=1;
+	1 row in set (0.01 sec)
+	
+	mysql> show variables like "%slow%";
+	+---------------------------+-------------------------------------------+
+	| Variable_name             | Value                                     |
+	+---------------------------+-------------------------------------------+
+	| log_slow_admin_statements | OFF                                       |
+	| log_slow_slave_statements | OFF                                       |
+	| slow_launch_time          | 2                                         |
+	| slow_query_log            | OFF                                       |
+	| slow_query_log_file       | /var/lib/mysql/vagrant-centos6.5-slow.log |
+	+---------------------------+-------------------------------------------+
+	5 rows in set (0.01 sec)
+
+在线关闭
+	
+	mysql> set global slow_query_log=0;
+	1 row in set (0.01 sec)	
+
+个人感觉这种在线开启,关闭的方式非常实用。如果运营突然反馈感觉系统有点慢,开启慢查询日志阶段性监测是个不错的选择
+	
+2 通过配置文件开启 `vim /etc/my.cnf`
+
+
+	[mysqld]
+	...
+
+	slow_query_log = ON
+    slow_query_log_file = /var/lib/mysql/vagrant-centos6.5-slow.log
+    long_query_time = 2
+
+保存退出后需要重启`msyqld`服务。有时候重启服务的代价有点大,生产环境慎用。
 
 构建一个查询超过2s的SQL
 
@@ -165,55 +200,14 @@ show [global|session] status like "Handler_read%";
 	SET timestamp=1550633821;
 	select sleep(5);  // 这是实际执行的SQL
 
-
-#### show [full] processlist 实时查看
-
-慢查询日志可以记录已经执行完成执行效率较低的SQL，如果现在MySQL很卡，如果查看MySQL的负载呢
-
-Connection 19线程有SQL正在执行时，通过`show full processlist`可以查看线程执行状态 是否锁表 等
-
-	mysql> show full processlist;
-	+----+-----------------+----------------------+------+---------+------+------------------------+------------------+
-	| Id | User            | Host                 | db   | Command | Time | State                  | Info             |
-	+----+-----------------+----------------------+------+---------+------+------------------------+------------------+
-	|  4 | event_scheduler | localhost            | NULL | Daemon  | 5529 | Waiting on empty queue | NULL             |
-	|  8 | root            | localhost            | qq   | Query   |    0 | starting               | show processlist |
-	| 19 | root            | 172.16.125.191:51591 | qq   | Query   |    1 | User sleep             | select sleep(5)  |
-	+----+-----------------+----------------------+------+---------+------+------------------------+------------------+
-	3 rows in set (0.00 sec)
-
-Connection 19 线程执行结束后，释放状态描述
-
-	mysql> show full processlist;
-	+----+-----------------+----------------------+------+---------+------+------------------------+------------------+
-	| Id | User            | Host                 | db   | Command | Time | State                  | Info             |
-	+----+-----------------+----------------------+------+---------+------+------------------------+------------------+
-	|  4 | event_scheduler | localhost            | NULL | Daemon  | 5539 | Waiting on empty queue | NULL             |
-	|  8 | root            | localhost            | qq   | Query   |    0 | starting               | show processlist |
-	| 19 | root            | 172.16.125.191:51591 | qq   | Sleep   |   11 |                        | NULL             |
-	+----+-----------------+----------------------+------+---------+------+------------------------+------------------+
-	3 rows in set (0.00 sec)
-
-当然，如果条件允许，可以直接杀掉这个线程
-
-	mysql> show full processlist;
-	+----+-----------------+----------------------+------+---------+------+------------------------+-----------------------+
-	| Id | User            | Host                 | db   | Command | Time | State                  | Info                  |
-	+----+-----------------+----------------------+------+---------+------+------------------------+-----------------------+
-	|  4 | event_scheduler | localhost            | NULL | Daemon  | 6092 | Waiting on empty queue | NULL                  |
-	|  8 | root            | localhost            | qq   | Query   |    0 | starting               | show full processlist |
-	| 19 | root            | 172.16.125.191:51591 | qq   | Query   |    4 | User sleep             | select sleep(100)     |
-	+----+-----------------+----------------------+------+---------+------+------------------------+-----------------------+
-	3 rows in set (0.00 sec)
-
-	mysql> kill query 19;
-	Query OK, 0 rows affected (0.00 sec)
-
-备注：
-
-- MySQL是单进程，多线程 进程挂了，整个服务也就挂了
-- Oracle在linux上默认是多进程，多进程的好处是一个进程崩溃不会影响另外的进程
-
+下面是一个生产环境上抓的慢查询片段实例
+	
+	# Time: 2019-05-09T02:55:59.536527Z
+	# User@Host: root[root] @ localhost [127.0.0.1]  Id: 58700
+	# Query_time: 10.810361  Lock_time: 0.000121 Rows_sent: 1  Rows_examined: 393855
+	SET timestamp=1557370559;
+	SELECT ...FROM ...;
+		
 ### step.3 分析SQL
 
 使用工具分析低效SQL的执行计划
@@ -313,6 +307,53 @@ show profiles 有许多参数
 
 这个没实操过，等我掌握了再补充 (——_——)
 
+#### show [full] processlist 实时监测mysql的连接
+
+慢查询日志只会对已经执行完成SQL记录，但是如果现在MySQL很卡，如何实时查看呢,这就需要借助`show processlist`命令
+
+	mysql> show full processlist;
+	+----+-----------------+----------------------+-------+-------------+------+---------------------------------------------------------------+-----------------------+
+	| Id | User            | Host                 | db    | Command     | Time | State                                                         | Info                  |
+	+----+-----------------+----------------------+-------+-------------+------+---------------------------------------------------------------+-----------------------+
+	|  4 | event_scheduler | localhost            | NULL  | Daemon      | 8314 | Waiting on empty queue                                        | NULL                  |
+	|  9 | slave_account   | 172.16.125.217:45976 | NULL  | Binlog Dump | 8071 | Master has sent all binlog to slave; waiting for more updates | NULL                  |
+	| 10 | root            | localhost            | NULL  | Query       |    0 | starting                                                      | show full processlist |
+	| 11 | root            | 172.16.125.153:61557 | study | Sleep       |    0 |                                                               | NULL                  |
+	+----+-----------------+----------------------+-------+-------------+------+---------------------------------------------------------------+-----------------------+
+	4 rows in set (0.00 sec)
+
+- Id 连接ID,常在手动断开连接时使用
+- User  显示当前用户，如果不是root，这个命令就只显示你权限范围内的sql语句
+- Host 显示连接的来源`ip`、`port`,常用来追踪用户
+- db 连接访问的哪个db
+- Command 当前连接负责任务的简单描述，例如 sleep query connect、Binlog Dump 等 
+- Time 会话持续时长
+- State 当前连接执行任务内容的详细描述
+- Info 具体信息,比如正在执行的sql语句
+
+Tips:Command列中如果产生大量sleep连接,最大的可能是mysql的调用方在获取结果集完成后,没有及时释放连接,转而进行其它的操作,导致调用方的进程不结束,
+mysql连接一直得不到释放。
+
+如果发现某个恶意连接，可以直接杀掉
+
+	mysql> show full processlist;
+	+----+-----------------+----------------------+------+---------+------+------------------------+-----------------------+
+	| Id | User            | Host                 | db   | Command | Time | State                  | Info                  |
+	+----+-----------------+----------------------+------+---------+------+------------------------+-----------------------+
+	|  4 | event_scheduler | localhost            | NULL | Daemon  | 6092 | Waiting on empty queue | NULL                  |
+	|  8 | root            | localhost            | qq   | Query   |    0 | starting               | show full processlist |
+	| 19 | root            | 172.16.125.191:51591 | qq   | Query   |    4 | User sleep             | select sleep(10000)   |
+	+----+-----------------+----------------------+------+---------+------+------------------------+-----------------------+
+	3 rows in set (0.00 sec)
+
+	mysql> kill query 19;
+	Query OK, 0 rows affected (0.00 sec)
+
+备注：
+
+- MySQL是单进程多线程应用。主进程挂了,整个服务也就挂了。
+- Oracle在linux上默认是多进程，多进程的好处是一个进程崩溃不会影响另外的进程
+
 ### step.4 根据分析结果，确定问题并采取对应的优化措施
 
 常见SQL层次优化技巧
@@ -320,7 +361,7 @@ show profiles 有许多参数
 	索引优化
 		最常规的优化手段
 	调整业务逻辑
-		不要过于依赖一条SQL解决所有问题
+		不要过于依赖一条SQL解决所有问题,越复杂的SQL越不稳定
 	使用存储过程
 		数据库分担一部分计算压力
 
@@ -338,8 +379,13 @@ show profiles 有许多参数
 	RENAME TABLE members TO members_bak,members_tmp TO members;
 
 ####	使用中间表提高查询速度
+
+	根据业务情况,比如在多表联查时手动创建临时表,尽快释放表资源。
+
 ####	数据缓存策略
+
 ####	数据冗余策略
+
 允许部分冗余减少连接查询
 
 ## Part.2 应用方面
@@ -386,10 +432,7 @@ show profiles 有许多参数
 当数据库的并发量变大时，连接的创建数直接影响数据库服务器的并发能力。那么，如何减少对MySQl的访问量呢
 
 - 创建应用端连接池，实现对连接的复用
-- 在应用端增加Cache层，实现对数据的复用
-- 离线分析、流式计算
-
-参考 [https://www.cnblogs.com/hhandbibi/p/7118740.html](https://www.cnblogs.com/hhandbibi/p/7118740.html "https://www.cnblogs.com/hhandbibi/p/7118740.html")
+- 在应用端增加Cache层，实现对数据的复用(离线分析、流式计算)
 
 ## Part.3 MySQL服务架构
 
@@ -438,3 +481,12 @@ show profiles 有许多参数
 ## 总结
 
 当然，还有很多优化的方向，比如内存优化等 但是目前我还没有掌握，等实操后，我再总结了。
+
+
+## 参考资料
+
+深入浅出mysql
+
+https://blog.csdn.net/dhfzhishi/article/details/81263084
+
+[https://www.cnblogs.com/hhandbibi/p/7118740.html](https://www.cnblogs.com/hhandbibi/p/7118740.html "https://www.cnblogs.com/hhandbibi/p/7118740.html")
