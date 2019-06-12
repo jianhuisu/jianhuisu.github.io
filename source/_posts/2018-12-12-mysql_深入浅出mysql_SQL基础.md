@@ -42,7 +42,7 @@ tags :
 
 修改数据表中列名
 
-	alter table `table_name` change column `列2` `column_2` INT(11) NOT NULL DEFAULT '0' after `id`;
+	alter table `table_name` change column `old_column_name` `new_column_name` INT(11) NOT NULL DEFAULT '0' after `id`;
 
 数据表中新加列
 
