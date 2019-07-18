@@ -75,7 +75,9 @@ concat_ws()
 
 	concat_ws('_',business_name,department_1,department_2,department_3,department_4) as unique_id
 	
-注意：concat_ws的参数操作项中含有NULL值时，那么返回值不一定为NULL	
+注意：concat_ws的参数操作项中含有NULL值时，那么返回值不一定为NULL
+
+    "concat_ws('_',division,orgName1,orgName2,orgName3,orgName4,position) as unique_code",  // 部分字段值为 null 时,不会导致整个unique_code为 null
 
 LEFT(str,n)
 RIGHT(str,n)
