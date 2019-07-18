@@ -77,7 +77,8 @@ concat_ws()
 	
 注意：concat_ws的参数操作项中含有NULL值时，那么返回值不一定为NULL
 
-    "concat_ws('_',division,orgName1,orgName2,orgName3,orgName4,position) as unique_code",  // 部分字段值为 null 时,不会导致整个unique_code为 null
+    "concat_ws('_',division,orgName1,orgName2,orgName3,orgName4,position) as unique_code",  // 部分字段值为 null 时,不会导致整个unique_code为 null,但是会影响分隔符的连接效果
+	"concat_ws('_',division,orgName1,orgName2,IFNULL(orgName3,''),IFNULL(orgName4,''),position) as unique_code",
 
 LEFT(str,n)
 RIGHT(str,n)
