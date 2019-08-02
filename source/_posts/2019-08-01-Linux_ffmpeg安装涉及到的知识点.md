@@ -55,7 +55,6 @@ ldconfig 这个程序，位于/sbin下，它的作用是将文件/etc/ld.so.conf
     /lib
     /usr/lib
     /usr/lib64
-    /usr/local/lib
     /usr/local/lib64
 
 我们使用`ldd`查看一下 ffmpeg 动态链接库的依赖关系
