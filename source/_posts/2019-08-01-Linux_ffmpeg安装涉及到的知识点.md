@@ -116,4 +116,4 @@ ffmpeg: error while loading shared libraries: libx264.so.157: cannot open shared
     解决运行 ffmpeg 时动态库 not found 问题 https://www.cnblogs.com/joshua317/articles/5478622.html
     ffmpeg 依赖的安装 http://blog.chinaunix.net/uid-11344913-id-3930867.html
     ffmpeg 官方下载地址 http://www.ffmpeg.org/releases/
-    
+   ffmpeg 依赖安装x264 https://www.cnblogs.com/cxchanpin/p/6943221.html 
