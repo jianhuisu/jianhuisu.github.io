@@ -224,4 +224,14 @@ eg.3
 
 	create table table_name 或 desc table_name
 
+复制一个数据表,只复制表结构
+    
+    create table user_copy like user
 
+复制一个数据表,包括结构、数据
+
+    create table user_copy select * from user [ 后面可以接条件 where id > 1000 ...]
+
+表数据复制插入(前提是 user_copy 与 select 子句后跟字段排列一致)
+
+    insert into user_copy name,id_card ... select name,id_card ... from user
