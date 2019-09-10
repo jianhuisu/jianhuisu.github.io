@@ -75,10 +75,13 @@ concat_ws()
 
 	concat_ws('_',business_name,department_1,department_2,department_3,department_4) as unique_id
 	
-注意：concat_ws的参数操作项中含有NULL值时，那么返回值不一定为NULL
+注意：concat_ws的参数操作项中含有NULL 、'' 值时的区别
 
-    "concat_ws('_',division,orgName1,orgName2,orgName3,orgName4,position) as unique_code",  // 部分字段值为 null 时,不会导致整个unique_code为 null,但是会影响分隔符的连接效果
-	"concat_ws('_',division,orgName1,orgName2,IFNULL(orgName3,''),IFNULL(orgName4,''),position) as unique_code",
+	*      concat_ws( '_', business_name, department_1, department_2 ) AS unique_code
+        *      department_2 为 ''     =>   墨丘利事业部_墨丘利产研_
+        *      department_2 为 NULL   =>   墨丘利事业部_墨丘利产研    
+        * 
+        *      两种方式产生的 unique_code 相差一个 "_" 字符
 
 LEFT(str,n)
 RIGHT(str,n)
